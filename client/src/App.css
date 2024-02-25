@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .App {
   text-align: center;
 }
@@ -36,3 +37,29 @@
     transform: rotate(360deg);
   }
 }
+=======
+@font-face {
+  font-family: "Against";
+  src: url('./assets/against_regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: "Galey 1";
+  src: url('./assets/Galey Semi Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: "Galey 2";
+  src: url('./assets/Galey Rounded Extra Light.ttf') format('truetype');
+}
+
+
+html {
+  background: linear-gradient(225deg, #d5deef, #b1c9ef) fixed;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family : "Galey 1";
+  overflow: auto;
+}
+
+
+>>>>>>> d1a7133 (Update on frontend)
