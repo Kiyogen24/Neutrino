@@ -6,10 +6,7 @@ import styled from "styled-components";
 import { registerRoute } from "../utils/APIRoutes";
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { useNavigate, Link } from "react-router-dom";
-<<<<<<< HEAD
-=======
 //import Logo from "../assets/logo.png";
->>>>>>> d1a7133 (Update on frontend)
 
 
 const Register = () => {
@@ -22,16 +19,9 @@ const Register = () => {
     theme: "light",
   };
 
-<<<<<<< HEAD
-  const [value, setValue] = useState({
-    username: "",
-  });
-  const [values, setValues] = useState({
-=======
 
   const [values, setValues] = useState({
     username: "",
->>>>>>> d1a7133 (Update on frontend)
     surname: "",
     password: "",
     confirmPassword: "",
@@ -50,10 +40,6 @@ const Register = () => {
 
 
   const handleChange = (event) => {
-<<<<<<< HEAD
-    setValue({ ...value, [event.target.name]: event.target.value });
-=======
->>>>>>> d1a7133 (Update on frontend)
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
@@ -63,11 +49,7 @@ const Register = () => {
     const { password, confirmPassword, username } = values;
     if (password !== confirmPassword) {
       toast.error(
-<<<<<<< HEAD
-        "Password and confirm password should be same.",
-=======
         "Les mots de passes doivent être identiques.",
->>>>>>> d1a7133 (Update on frontend)
         toastOptions
       );
       return false;
@@ -84,12 +66,9 @@ const Register = () => {
       );
       return false;
     } 
-<<<<<<< HEAD
-=======
     if (values.surname === ""){
       values.surname = values.username;
     }
->>>>>>> d1a7133 (Update on frontend)
 
     return true;
   };
@@ -126,28 +105,6 @@ const Register = () => {
       <div className='all'>
       <FormContainer>
       <form onSubmit={(e) => handleSubmit(e)}>
-<<<<<<< HEAD
-      <div className="brand">
-            
-            <h1>LockChat</h1>
-          </div>
-          
-          
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            onChange={(e) => handleChange(e)}  
-          />
-
-          <input
-            type="surname"
-            placeholder="Surname"
-            name="surname"
-            onChange={(e) => handleChange(e)}          
-          />
-
-=======
           <p className='title'>Créez votre compte Neutrino</p>
          
           <div className="input-group">
@@ -168,25 +125,11 @@ const Register = () => {
 
           <div className="input-group">
           <label for="password">Mot de passe</label>
->>>>>>> d1a7133 (Update on frontend)
           <input
             type="password"
             placeholder="Password"
             name="password"
             onChange={(e) => handleChange(e)}
-<<<<<<< HEAD
-          />
-
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            onChange={(e) => handleChange(e)}
-          />
-          <PasswordStrengthBar scoreWordStyle={{font:"Segoe UI", color: "#716E74"}} shortScoreWord='Trop court' scoreWords={['Très Faible','Faible','Normal','Bien','Fort']} password={getPassword()} />
-          
-          <button className="button2" type="submit">Create User</button>
-=======
           /></div>
 
           <div className="input-group">
@@ -203,7 +146,6 @@ const Register = () => {
           <span>
             Already have an account ? <Link to="/">Log in.</Link>
           </span>
->>>>>>> d1a7133 (Update on frontend)
           
         
       </form>
@@ -216,62 +158,6 @@ const Register = () => {
 
 export default Register;
 const FormContainer = styled.div`
-<<<<<<< HEAD
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background: linear-gradient(225deg, #f8f1ff, #ddc2ff);
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-    img {
-      height: 5rem;
-    }
-    h1 {
-      font-size: 1.75vw;
-      color:  #69369e;
-    }
-  }
-  form {
-    display: flex;
-    
-    flex-direction: column;
-    gap: 2rem;
-    background-color: #e8e8e8;
-    border-radius: 2rem;
-    padding: 3rem 4rem;
-  }
-  input {
-    font-family: "Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
-    font-weight: 500;
-    font-size: .8vw;
-    color: black;
-    background-color: #f8f1ff;
-    box-shadow: 0 0 .4vw #ddc2ff, 0 0 0 .15vw transparent;
-    border-radius: 0.4vw;
-    border: none;
-    outline: none;
-    padding: 0.8vw;
-    width: 25rem;
-    transition: .2s;
-  }
-  
-  input:hover {
-    box-shadow: 0 0 0 .15vw rgba(138,43,255, 0.326);
-  }
-  
-  input:focus {
-    box-shadow: 0 0 0 .15vw #69369e;
-  }
-  .button2 {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
-=======
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -336,23 +222,11 @@ const FormContainer = styled.div`
   .button2 {
     font-family: "Galey 1","Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     background: #d5deef;
->>>>>>> d1a7133 (Update on frontend)
     display: inline-block;
     transition: all 0.2s ease-in;
     position: relative;
     overflow: hidden;
     z-index: 1;
-<<<<<<< HEAD
-    font-weight: 600;
-    font-size: .9vw;
-    color:  	#69369e;
-    padding: 0.7em 1.7em;
-    cursor: pointer;
-    border-radius: 0.5em;
-    background: #e8e8e8;
-    border: 1px solid #e8e8e8;
-    box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #fff;
-=======
     font-weight: 500;
     font-size: 1.2rem;
     color:  	black;
@@ -361,16 +235,11 @@ const FormContainer = styled.div`
     border-radius: 0.5em;
     border: 1px solid #d5deef;
 
->>>>>>> d1a7133 (Update on frontend)
   }
   
   .button2:active {
     color: #666;
-<<<<<<< HEAD
-    box-shadow: inset 4px 4px 12px #e8e8e8, inset -4px -4px 12px #fff;
-=======
     box-shadow: inset 4px 4px 12px #d5deef, inset -4px -4px 12px #fff;
->>>>>>> d1a7133 (Update on frontend)
   }
   
   .button2:before {
@@ -405,34 +274,18 @@ const FormContainer = styled.div`
   
   .button2:hover {
     color: #ffffff;
-<<<<<<< HEAD
-    border: 1px solid #69369e;
-=======
     border: 1px solid black;
 
->>>>>>> d1a7133 (Update on frontend)
   }
   
   .button2:hover:before {
     top: -35%;
-<<<<<<< HEAD
-    background-color: #69369e;
-=======
     background-color: #395886;
->>>>>>> d1a7133 (Update on frontend)
     transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
   }
   
   .button2:hover:after {
     top: -45%;
-<<<<<<< HEAD
-    background-color: #69369e;
-    transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
-  }
-  }
-
-`;
-=======
     background-color: black;
     transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
   }
@@ -570,4 +423,3 @@ input:focus {
 }
 `;
 
->>>>>>> d1a7133 (Update on frontend)
