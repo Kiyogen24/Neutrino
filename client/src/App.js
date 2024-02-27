@@ -4,13 +4,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
-import Navbar from './components/Navbar/Navbar';
+//import Navbar from './components/Navbar/Navbar';
 
 
 export default function App() {
   return (
     <BrowserRouter>
-    <Navbar />
       <Routes>
         <Route path="/" element={<Chat />} />
         <Route path="/login" element={<Login />} />

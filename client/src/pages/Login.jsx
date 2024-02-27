@@ -20,9 +20,11 @@ const Login = () => {
     draggable: true,
     theme: "light",
   };
+  
   useEffect(() => {
     if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
-      navigate("/");
+      alert(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY));
+      navigate("/register");
     }
   }, []);
 
@@ -142,12 +144,12 @@ const FormContainer = styled.div`
     
   }
   span {
-    font-family: "Galey 1", sans-serif;
+    
     font-size: 1.2rem;
   }
 
   input {
-    font-family: "Galey 1","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+    
     font-weight: 500;
     font-size: 1.2rem;
     color: black;
