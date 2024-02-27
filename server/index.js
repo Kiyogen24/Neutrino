@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
+const messageRoutes = require("./routes/messages");
 const app = express();
 const socket = require("socket.io");
 require("dotenv").config();
@@ -10,6 +11,8 @@ const path = require('path');
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
+
 app.use(express.static("build"));
 
 app.get("*", (req, res) => {
