@@ -16,9 +16,9 @@ export default function Welcome() {
     <Container>
 
       <h1>
-        Welcome, <span>{userName}!</span>
+        Bienvenue, <span>{userName}!</span>
       </h1>
-      <h3>Please select a chat to Start messaging.</h3>
+      <h3>Séléctionnez une discussion pour commencer.</h3>
     </Container>
   );
 }
@@ -33,6 +33,6 @@ const Container = styled.div`
     height: 20rem;
   }
   span {
-    color: #4e0eff;
+    color: #03045F;
   }
 `;
