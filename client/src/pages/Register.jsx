@@ -107,10 +107,17 @@ const Register = () => {
           <div className="input-group">
           <label htmlFor="username">Nom d'utilisateur</label>
           <input
-            type="text"
-            name="username"
-            onChange={(e) => handleChange(e)}  
-          /></div>
+              type="text"
+              placeholder="Username"
+              name="username"
+              value={`@${values.username}`}
+              onChange={(e) => {
+                if (e.target.value.startsWith("@")) {
+                  setValues({ ...values, username: e.target.value.slice(1) });
+                }
+              }}
+              min="3"
+            /></div>
 
           <div className="input-group">
           <label htmlFor="surename">Pseudo</label>
@@ -159,14 +166,14 @@ const Register = () => {
 
 export default Register;
 const FormContainer = styled.div`
-  margin: 0 auto;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
   .title {
-      font-family: "Galey 1", sans-serif;
       text-align: left;
       font-size: 1.75rem;
       line-height: 2rem;
@@ -186,7 +193,6 @@ const FormContainer = styled.div`
     margin-top: 1.5rem;
   }
   span {
-    font-family: "Galey 1", sans-serif;
     font-size: 1.2rem;
   }
 

@@ -23,8 +23,7 @@ const Login = () => {
   
   useEffect(() => {
     if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
-      alert(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY));
-      navigate("/register");
+      navigate("/login");
     }
   }, []);
 
@@ -75,18 +74,24 @@ const Login = () => {
     <>
       <FormContainer>
         <form action="" onSubmit={(event) => handleSubmit(event)}>
-          <div className="brand">
-          <img src={Logo} alt="logo" />
-            <h1>Neutrino</h1>
-          </div>
+
+            <h1 className="title">Se connecter</h1>
           <span className='IDe'>Saisissez vos identifiants</span>
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            onChange={(e) => handleChange(e)}
-            min="3"
-          />
+          
+            
+            <input
+              type="text"
+              placeholder="Username"
+              name="username"
+              value={`@${values.username}`}
+              onChange={(e) => {
+                if (e.target.value.startsWith("@")) {
+                  setValues({ ...values, username: e.target.value.slice(1) });
+                }
+              }}
+              min="3"
+            />
+          
           <input
             type="password"
             placeholder="Password"
@@ -114,20 +119,12 @@ const FormContainer = styled.div`
   justify-content: center;
   align-items: center;
   
-  .brand {
-    display: flex;
-    align-items: left;
-    justify-content: left;
-    img {
-      height: 7rem;
-    }
-    h1 {
-      font-family: "Against", sans-serif;
-      font-size: 3rem;
-      color:  black;
-      font-weight: 900;
-      text-shadow: 0.2rem 0.2rem 0.2rem #d5deef; 
-    }
+  .title {
+    text-align: left;
+    font-size: 1.75rem;
+    line-height: 2rem;
+    font-weight: 700;
+    
   }
   .IDe {
     color: #395886;
