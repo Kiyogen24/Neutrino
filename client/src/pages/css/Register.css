@@ -261,7 +261,7 @@
     margin-top: 20px;
 }
 
-.formulaire .contenu .domes-pout spa:nth-of-type(2) {
+.formulaire .contenu .domes-pout span:nth-of-type(2) {
     color: rgb(0, 120, 184);
     text-decoration: underline;
 }
