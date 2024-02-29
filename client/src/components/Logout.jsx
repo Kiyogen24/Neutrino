@@ -1,18 +1,30 @@
-import React from "react";
+import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { BiPowerOff } from "react-icons/bi";
 import styled from "styled-components";
 import axios from "axios";
 import { logoutRoute } from "../utils/APIRoutes";
+
 export default function Logout() {
   const navigate = useNavigate();
+  const [id, setId] = useState(undefined);
+
   const handleClick = async () => {
-    const id = await JSON.parse(
+    const user = sessionStorage.getItem('app-user');
+    if (!user) {
+    setId(await JSON.parse(
       localStorage.getItem("app-user")
-    )._id;
+    )._id);
+    }
+    else {
+      setId(await JSON.parse(
+        user
+      )._id);
+    }
     const data = await axios.get(`${logoutRoute}/${id}`);
     if (data.status === 200) {
       localStorage.clear();
+      sessionStorage.clear();
       navigate("/login");
     }
   };

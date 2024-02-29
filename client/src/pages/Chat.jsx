@@ -31,7 +31,10 @@ export default function Chat() {
   
 useEffect(() => {
   const fetchUser = async () => {
-    const user = localStorage.getItem("app-user");
+    let user = localStorage.getItem("app-user");
+    if (!user) {
+      user = sessionStorage.getItem("app-user");
+    }
     console.log(user);
     if (!user) {
       navigate("/login");

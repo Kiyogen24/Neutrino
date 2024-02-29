@@ -5,12 +5,21 @@ export default function Welcome() {
   const [userName, setUserName] = useState("");
   useEffect(() => {
     const getUser = async () => {
+    const user = sessionStorage.getItem("app-user");
+    if (!user) {
     setUserName(
       await JSON.parse(
         localStorage.getItem("app-user")
       ).username
     );}
+    else {
+      setUserName(
+        await JSON.parse(
+          user
+        ).username
+  );}}
     getUser();
+    console.log(userName);
   }, []);
   return (
     <Container>

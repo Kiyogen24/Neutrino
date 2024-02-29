@@ -4,24 +4,31 @@ import styled from "styled-components";
 
 export default function Contacts({ contacts, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
-  //const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
+  const [data, setData] = useState(undefined);
 
   useEffect(() => {
     const fetchUsers = async () => {
-    const data = await JSON.parse(
-      localStorage.getItem("app-user")
-    )
-    setCurrentUserName(data.surname);
-    }
+      const user = sessionStorage.getItem("app-user");
+      if (!user) {
+        setData(await JSON.parse(localStorage.getItem("app-user")));
+      } else {
+        setData(await JSON.parse(user));
+      }
+      console.log(data);
+      if (data) {
+        setCurrentUserName(data.surname);
+      }
+    };
 
     fetchUsers();
-    }, []);
+  }, []);
 
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
   };
+  
   return (
     <>
       

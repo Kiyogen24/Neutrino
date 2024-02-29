@@ -18,18 +18,27 @@ export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [data, setData] = useState(undefined);
+  const user = sessionStorage.getItem('app-user');
+
   useEffect(() => {
     const getMessage = async () => {
-      const data = await JSON.parse(
-        localStorage.getItem("app-user")
-      );
+      if (!user) {
+        console.log("localStorage.getItem('app-user'):", localStorage.getItem("app-user"));
+        setData(await JSON.parse(localStorage.getItem("app-user")));
+      } else {
+        console.log("user:", user);
+        setData(await JSON.parse(user));
+      }
       
-      const response = await axios.post(recieveMessageRoute, {
-        from: data._id,
-        to: currentChat._id,
-      });
-      setMessages(response.data);
-      console.log(messages);
+      if (data && currentChat) {
+        const response = await axios.post(recieveMessageRoute, {
+          from: data._id,
+          to: currentChat._id,
+        });
+        setMessages(response.data);
+        console.log(messages);
+      }
     }
     getMessage();
   }, [currentChat]);
@@ -37,35 +46,45 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     const getCurrentChat = async () => {
       if (currentChat) {
-        await JSON.parse(
-          localStorage.getItem("app-user")
-        )._id;
+        if (!user) {
+          console.log("localStorage.getItem('app-user'):", localStorage.getItem("app-user"));
+          
+          await JSON.parse(localStorage.getItem("app-user"))._id;
+        } else {
+          console.log("user:", user);
+          await JSON.parse(user)._id
+        }
       }
     };
     getCurrentChat();
   }, [currentChat]);
 
   const handleSendMsg = async (msg) => {
-    const data = await JSON.parse(
-      localStorage.getItem("app-user")
-    );
-    socket.current.emit("send-msg", {
-      to: currentChat._id,
-      from: data._id,
-      msg,
-    });
-    await axios.post(sendMessageRoute, {
-      from: data._id,
-      to: currentChat._id,
-      message: msg,
-    });
+    if (!user) {
+      setData(await JSON.parse(
+        localStorage.getItem("app-user")
+      ));
+    }
+    else {
+      setData(await JSON.parse(user));
+    }
+    if (data && currentChat) {
+      socket.current.emit("send-msg", {
+        to: currentChat._id,
+        from: data._id,
+        msg,
+      });
+      await axios.post(sendMessageRoute, {
+        from: data._id,
+        to: currentChat._id,
+        message: msg,
+      });
 
-    const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg });
-    setMessages(msgs);
+      const msgs = [...messages];
+      msgs.push({ fromSelf: true, message: msg });
+      setMessages(msgs);
+    }
   };
-    
-
 
   useEffect(() => {
     if (socket.current) {
@@ -84,7 +103,6 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [messages]);
 
   return (
-    
     <Container>
       <div className="chat-header">
         <div className="user-details">
