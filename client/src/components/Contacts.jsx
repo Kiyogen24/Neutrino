@@ -10,7 +10,7 @@ export default function Contacts({ contacts, changeChat }) {
   useEffect(() => {
     const fetchUsers = async () => {
     const data = await JSON.parse(
-      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      localStorage.getItem("app-user")
     )
     setCurrentUserName(data.surname);
     }

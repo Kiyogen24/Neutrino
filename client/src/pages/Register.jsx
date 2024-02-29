@@ -34,6 +34,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false)
   const [passwordHidden, setPasswordHidden] = useState({ password: true, confirm: true })
 
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -112,7 +113,7 @@ const Register = () => {
               }
               if (data.status === true) {
                 localStorage.setItem(
-                  process.env.REACT_APP_LOCALHOST_KEY,
+                  "app-user",
                   JSON.stringify(data.user)
                 );
                 
@@ -135,12 +136,12 @@ const Register = () => {
               </div>
           </div>
           <div className="container">
-              <div className="whipped-bug">
+              <div className="contenu">
                   <div className="header">
                       <h2>Créer votre compte <strong>Neutrino</strong></h2>
                       <span>pour accéder à la messagerie</span>
                   </div>
-                  <div className="tabstop-ebbs">
+                  <div className="inputs-group">
                       <div className="spastics-foe">
                           <span>Nom d'utilisateur</span>
                           <input className={errors.username ? "error" : undefined} value={`@${username}`} 
@@ -215,13 +216,13 @@ const Register = () => {
                       </div>
                   </div> <br></br>
                       <PasswordStrengthBar
-                  style={window.matchMedia('(max-width: 480px)').matches ? { width: '65%' } : { width: '100%' }}
+                  style={{ width: '100%' }}
                   scoreWordStyle={{ color: '#716E74' }}
                   shortScoreWord="Trop court"
                   scoreWords={['Très Faible', 'Faible', 'Normal', 'Bien', 'Fort']}
                   password={password}
                 />   
-                  <div className={loading ? "kittened-web spinner" : "kittened-web"}>
+                  <div className={loading ? "redirection spinner" : "redirection"}>
                       <button onClick={() => handleRegister()}>
                           { loading ? <img src={Spinner} alt="" /> : "Créer un compte"}
                       </button>

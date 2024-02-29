@@ -4,7 +4,17 @@ const bcrypt = require("bcrypt");
 
 module.exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+  const { username, password , /*token*/} = req.body;
+    /*
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.SECRET_KEY}&response=${token}`
+    );
+    if (response.data.success) {
+      res.send("Human 👨 👩");
+    } else {
+      res.send("Robot 🤖");
+    }*/
+
     const user = await User.findOne({ username });
     if (!user)
       return res.json({ msg: "Nom d'utilisateur ou mot de passe incorrect", status: false });
