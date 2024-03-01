@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import Logo from "../assets/neutrino.png"
 
 
 export default function Contacts({ contacts, changeChat }) {
@@ -35,7 +36,8 @@ export default function Contacts({ contacts, changeChat }) {
         <Container>
           <div className="brand">
             
-            <h2>Neutrino</h2>
+            <img src={Logo} alt="" style={{ width: '100px', height: 'auto' }} />
+            <h1>Neutrino</h1>
           </div>
           <div className="contacts">
             {contacts.map((contact, index) => {
@@ -72,19 +74,24 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 75% 15%;
   overflow: hidden;
-  background-color: #294C60;
-  border-radius: 1rem;
+  background-color: #101010ef;
   .brand {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    justify-content: center;
+    justify-content: left;
     img {
       height: 2rem;
     }
-    h2 {
-      color: white;
+    h1 {
+      background: #03045F; 
+      background: -webkit-linear-gradient(to top, #03045F, #00B6DA); 
+      background: linear-gradient(to top, #03045F 0%, #00B6DA 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-left: 0;
     }
+    
   }
   .contacts {
     display: flex;
@@ -97,7 +104,6 @@ const Container = styled.div`
       &-thumb {
         background-color: #4db6c4;
         width: 0.1rem;
-        border-radius: 1rem;
       }
     }
     .contact {
@@ -128,12 +134,11 @@ const Container = styled.div`
   }
 
   .current-user {
-    background-color: #0d0d30;
+    background-color: #101010;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 2rem;
-    border-radius: 0.6rem;
     .avatar {
       img {
         height: 4rem;

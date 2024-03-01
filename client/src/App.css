@@ -31,7 +31,17 @@ html {
   font-style: normal;
   font-variation-settings:
     "wdth" 100;
-  overflow: auto;
+    overflow: auto;
 }
+
+body{
+	margin: 0 auto;
+}
+
+@media only screen and (max-width: 720px) {
+  html {overflow: hidden;}
+}
+
+
 
 

@@ -77,8 +77,8 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (username=== "" && password===""){
-      console.log("Le nom d'utilisateur et le mot de passe ne doivent pas être vides.")
+    if (username=== "" || password===""){
+      console.log("Le nom d'utilisateur ou le mot de passe ne doivent pas être vides.")
       return;
     }
     setLoading(true);
@@ -148,11 +148,12 @@ const Login = () => {
     }
   }
 
+
   return (
     redirect === false ? (
       <div className="formulaire">
         <div className="navigation">
-          <img src={Logo} alt="" />
+          <img src={Logo} alt="" style={{ width: '100px', height: 'auto' }} />
           <div>
             <img src={GlobeIcon} alt="" />
             <span>Français</span>

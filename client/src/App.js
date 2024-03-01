@@ -5,7 +5,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 //import Navbar from './components/Navbar/Navbar';
-
+import Sidebar from "./components/Navbar/Navbar.tsx";
 
 export default function App() {
   return (

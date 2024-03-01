@@ -36,8 +36,9 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: black;
   flex-direction: column;
+  background-color: #00000090;
   img {
     height: 20rem;
   }

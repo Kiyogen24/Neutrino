@@ -12,6 +12,7 @@
     padding: 10px 20px;
 }
 
+
 .formulaire .navigation > div {
     background-color: white;
     display: flex;
@@ -280,5 +281,8 @@
 
     .formulaire .contenu inputs-group input {
         width: 100%;
+    }
+    .formulaire .navigation {
+        display: none;
     }
 }
