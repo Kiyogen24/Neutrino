@@ -73,6 +73,7 @@ display: grid;
       justify-content: flex-start;
       .content {
         background-color: #03045F;
+        
       }
     }
   }

@@ -1,0 +1,53 @@
+.Prosidebar {
+    width: 50px;
+    background-color: #101010ef;
+    transition: width 0.3s ease;
+}
+
+.Prosidebar:hover {
+    width: 200px;
+}
+
+.Prosidebar-header {
+    padding: 20px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+.Menu {
+    padding: 20px;
+}
+
+
+.MenuItem {
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: #fff;
+}
+
+.MenuItem span {
+    display: none;
+}
+
+.MenuItem:hover {
+    background-color: #87bfe9;
+}
+
+.Prosidebar-icon {
+    margin-right: 10px;
+    font-size: 20px;
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+
+.MenuItem:hover .Prosidebar-icon {
+    transform: rotate(360deg);
+}
+
+.Prosidebar:hover .MenuItem span {
+    display: inline;
+}

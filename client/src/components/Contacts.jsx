@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import styled from "styled-components";
 import Logo from "../assets/neutrino.png"
 
@@ -16,14 +16,16 @@ export default function Contacts({ contacts, changeChat }) {
       } else {
         setData(await JSON.parse(user));
       }
-      console.log(data);
-      if (data) {
-        setCurrentUserName(data.surname);
-      }
     };
 
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (data) {
+      setCurrentUserName(data.surname);
+    }
+  }, [data]);
 
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
@@ -32,57 +34,51 @@ export default function Contacts({ contacts, changeChat }) {
   
   return (
     <>
-      
-        <Container>
-          <div className="brand">
-            
-            <img src={Logo} alt="" style={{ width: '100px', height: 'auto' }} />
-            <h1>Neutrino</h1>
-          </div>
-          <div className="contacts">
-            {contacts.map((contact, index) => {
-              return (
-                <div
-                  key={contact._id}
-                  className={`contact ${
-                    index === currentSelected ? "selected" : ""
-                  }`}
-                  onClick={() => changeCurrentChat(index, contact)}
-                >
-                  
-                  <div className="username">
-                    <h3>{contact.surname}</h3>
-                  </div>
+      <Container>
+        <div className="brand">
+          <h2>Neutrino</h2>
+        </div>
+        <div className="separator"></div>
+        <div className="contacts">
+          {contacts.map((contact, index) => {
+            return (
+              <div
+                key={contact._id}
+                className={`contact ${
+                  index === currentSelected ? "selected" : ""
+                }`}
+                onClick={() => changeCurrentChat(index, contact)}
+              >
+                <div className="username">
+                  <h3>{contact.surname}</h3>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
+        </div>
+        <div className="current-user">
+          <div className="avatar"></div>
+          <div className="username">
+            <h2>{currentUserName}</h2>
           </div>
-          <div className="current-user">
-            <div className="avatar">
-              
-            </div>
-            <div className="username">
-              <h2>{currentUserName}</h2>
-            </div>
-          </div>
-        </Container>
-      
+        </div>
+      </Container>
     </>
   );
 }
+
 const Container = styled.div`
   display: grid;
-  grid-template-rows: 10% 75% 15%;
+  rezise: horizontal;
+  grid-template-rows: 6.5% 1.5% 77% 15%;
   overflow: hidden;
   background-color: #101010ef;
   .brand {
     display: flex;
     align-items: center;
-    justify-content: left;
-    img {
-      height: 2rem;
-    }
-    h1 {
+    justify-content: center;
+
+    h2 {
       background: #03045F; 
       background: -webkit-linear-gradient(to top, #03045F, #00B6DA); 
       background: linear-gradient(to top, #03045F 0%, #00B6DA 85%);
@@ -93,12 +89,15 @@ const Container = styled.div`
     }
     
   }
+  .separator {
+    height: 1px;
+    background: white;
+  }
   .contacts {
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: auto;
-    gap: 0.8rem;
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
@@ -107,8 +106,7 @@ const Container = styled.div`
       }
     }
     .contact {
-      background-color: #ffefd3;
-      min-height: 5rem;
+      min-height: 2rem;
       cursor: pointer;
       width: 90%;
       border-radius: 0.6rem;
@@ -124,12 +122,26 @@ const Container = styled.div`
       }
       .username {
         h3 {
-          color: black;
+          color: white;
         }
       }
     }
+    .contact:hover {
+      background-color: #303030ef;
+    }
     .selected {
-      background-color: #FFC49B;
+      transition: 0.5s ease-in-out;
+      background: #404040ef;
+      
+      .username {
+        h3 {
+          background: -webkit-linear-gradient(to bottom, #ff, #00B6DA); 
+          background: linear-gradient(to bottom, #fff 0%, #00B6DA 85%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+      }
     }
   }
 

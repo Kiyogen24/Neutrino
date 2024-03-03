@@ -156,7 +156,7 @@
     font-weight: 500;
     background-color: #03045F;
     box-sizing: border-box;
-    transition: all 0.2s ease-in;
+    transition: all 0.1s ease-in;
     position: relative;
     overflow: hidden;
     z-index: 1;

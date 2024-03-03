@@ -1,27 +1,19 @@
 import React, { useState } from "react";
-//react pro sidebar components
-import {ProSidebar,Menu,MenuItem,SidebarHeader,SidebarFooter,SidebarContent,} from "react-pro-sidebar";
-//icons from react icons
-import { FaList, FaRegHeart } from "react-icons/fa";
+import { ProSidebar, Menu, MenuItem, SidebarHeader, SidebarFooter, SidebarContent } from "react-pro-sidebar";
+import { FaList, FaComment,FaUser } from "react-icons/fa";
 import { FiHome, FiLogOut, FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
 import { RiPencilLine } from "react-icons/ri";
-import { BiCog } from "react-icons/bi";
 import { SiApacheairflow } from "react-icons/si";
 import { GiAbstract050 } from "react-icons/gi";
-//sidebar css from react-pro-sidebar module
 import "react-pro-sidebar/dist/css/styles.css";
 import { useNavigate } from "react-router-dom";
 import { BiPowerOff } from "react-icons/bi";
 import styled from "styled-components";
 import axios from "axios";
 import { logoutRoute } from "../../utils/APIRoutes";
-
+import Logo from "../../assets/neutrino.png";
 
 const Sidenav = () => {
-  //menuCollapse state using useState hook
-
-  const [menuCollapse, setMenuCollapse] = useState(true)
-
 
   const navigate = useNavigate();
   const [id, setId] = useState(undefined);
@@ -41,31 +33,36 @@ const Sidenav = () => {
     }
   };
 
-  return (<><div id="header">{
-    /* collapsed props to change menu size using menucollapse state */}
-    <ProSidebar collapsed={menuCollapse}>
-      <SidebarHeader>
-      <div className="logotext" >
-        {/* Icon change using menucollapse state */}
-        <p>{menuCollapse ? <GiAbstract050 /> : <SiApacheairflow /> }</p>
-        </div>
-
+  return (
+    <>
+      <div id="header">
+        <ProSidebar collapsed={true}>
+          <SidebarHeader>
+            <div className="logotext">
+            <img src={Logo} alt="" style={{ width: '60px', height: 'auto' }} />
+            </div>
           </SidebarHeader>
           <SidebarContent>
-            <Menu iconShape="square">
-              <MenuItem active={true} icon={<FiHome />}>Home</MenuItem>
+            <Menu iconShape="round">
+              <MenuItem active={true} icon={<FiHome />}>
+                Home
+              </MenuItem>
               <MenuItem icon={<FaList />}>Category</MenuItem>
-              <MenuItem icon={<FaRegHeart />}>Favourite</MenuItem>
-              <MenuItem icon={<BiCog />}>Settings</MenuItem>
-              </Menu>
-              </SidebarContent>
-              <SidebarFooter>
-                <Menu iconShape="square">
-                  <MenuItem icon={<FiLogOut />} onClick={handleClick}>Logout</MenuItem>
-                </Menu>
-                </SidebarFooter>
-              </ProSidebar>
-            </div>
-          </>
-        );}
-    export default Sidenav
+              <MenuItem icon={<FaComment />}>Favourite</MenuItem>
+              <MenuItem icon={<FaUser />}>Settings</MenuItem>
+            </Menu>
+          </SidebarContent>
+          <SidebarFooter>
+            <Menu iconShape="square">
+              <MenuItem icon={<FiLogOut />} onClick={handleClick}>
+                Logout
+              </MenuItem>
+            </Menu>
+          </SidebarFooter>
+        </ProSidebar>
+      </div>
+    </>
+  );
+};
+
+export default Sidenav;

@@ -20,8 +20,8 @@
 }
 
 html {
-  
-  background: linear-gradient(to top, #93E1F0 0%, #CEF1F9 100%) fixed;
+  background: linear-gradient(to top right, white 20%, #93E1F0 100%) fixed;
+  background: url(./assets/background.jpg);
   box-sizing: border-box;
   margin: 0;
   padding: 0;

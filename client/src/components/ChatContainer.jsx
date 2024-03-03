@@ -5,14 +5,6 @@ import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
 import "./css/ChatContainer.css"
 
 export default function ChatContainer({ currentChat, socket }) {
@@ -24,17 +16,20 @@ export default function ChatContainer({ currentChat, socket }) {
 
   useEffect(() => {
     const getMessage = async () => {
+      let userData;
       if (!user) {
         console.log("localStorage.getItem('app-user'):", localStorage.getItem("app-user"));
-        setData(await JSON.parse(localStorage.getItem("app-user")));
+        userData = await JSON.parse(localStorage.getItem("app-user"));
+        setData(userData);
       } else {
         console.log("user:", user);
-        setData(await JSON.parse(user));
+        userData = await JSON.parse(user);
+        setData(userData);
       }
       
-      if (data && currentChat) {
+      if (userData && currentChat) {
         const response = await axios.post(recieveMessageRoute, {
-          from: data._id,
+          from: userData._id,
           to: currentChat._id,
         });
         setMessages(response.data);
@@ -42,7 +37,7 @@ export default function ChatContainer({ currentChat, socket }) {
       }
     }
     getMessage();
-  }, [currentChat]);
+  }, [currentChat, user]); 
   
   useEffect(() => {
     const getCurrentChat = async () => {
