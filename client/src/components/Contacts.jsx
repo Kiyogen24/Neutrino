@@ -56,12 +56,14 @@ export default function Contacts({ contacts, changeChat }) {
             );
           })}
         </div>
+        {/*
         <div className="current-user">
           <div className="avatar"></div>
           <div className="username">
             <h2>{currentUserName}</h2>
           </div>
         </div>
+        */}
       </Container>
     </>
   );
