@@ -5,27 +5,23 @@ export default function Welcome() {
   const [userName, setUserName] = useState("");
   useEffect(() => {
     const getUser = async () => {
-    const user = sessionStorage.getItem("app-user");
-    if (!user) {
-    setUserName(
-      await JSON.parse(
-        localStorage.getItem("app-user")
-      ).username
-    );}
-    else {
-      setUserName(
-        await JSON.parse(
-          user
-        ).username
-  );}}
+      const user = sessionStorage.getItem("app-user");
+      if (!user) {
+        setUserName(
+          await JSON.parse(localStorage.getItem("app-user")).username
+        );
+      } else {
+        setUserName(await JSON.parse(user).username);
+      }
+    };
     getUser();
     console.log(userName);
   }, []);
+
   return (
     <Container>
-
       <h1>
-        Bienvenue, <span>{userName}!</span>
+        Bienvenue, <span>{userName} !</span>
       </h1>
       <h3>Séléctionnez une discussion pour commencer.</h3>
     </Container>
@@ -43,6 +39,10 @@ const Container = styled.div`
     height: 20rem;
   }
   span {
-    color: #03045F;
+    color: #03045f;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;

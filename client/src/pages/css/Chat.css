@@ -12,6 +12,7 @@
     background-color: #101010;
 }
 
+
 .logotext {
     display: flex;
   justify-content: center;
@@ -37,7 +38,7 @@
 
 @media screen and (min-width: 720px) and (max-width: 1080px) {
     .box .container {
-        grid-template-columns: 35% 65%;
+        grid-template-columns: 25% 75%;
     }
 }
 
@@ -125,14 +126,15 @@
     }
 
     .box .container {
-        grid-template-columns: 100%;
+        grid-template-columns: 25% 75%;
+    }
+    #header {
+        display: none;
     }
 }
 
 @media screen and (max-width: 480px) {
-    #header {
-        display: none;
-    }
+    
     .box .container {
         grid-template-columns: 100%;
     }

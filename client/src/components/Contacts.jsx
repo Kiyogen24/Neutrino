@@ -51,6 +51,7 @@ export default function Contacts({ contacts, changeChat }) {
               >
                 <div className="username">
                   <h3>{contact.surname}</h3>
+                  <h5>{'@'+contact.username}</h5>
                 </div>
               </div>
             );
@@ -72,9 +73,9 @@ export default function Contacts({ contacts, changeChat }) {
 const Container = styled.div`
   display: grid;
   rezise: horizontal;
-  grid-template-rows: 6.5% 1.5% 77% 15%;
+  grid-template-rows: 0% 1% 100% 0%;
   overflow: hidden;
-  background-color: #101010ef;
+  background-color: #101010;
   .brand {
     display: flex;
     align-items: center;
@@ -88,12 +89,13 @@ const Container = styled.div`
       background-clip: text;
       color: transparent;
       margin-left: 0;
+      display: none;
     }
     
   }
   .separator {
     height: 1px;
-    background: white;
+    background: #101010;
   }
   .contacts {
     display: flex;
@@ -108,14 +110,10 @@ const Container = styled.div`
       }
     }
     .contact {
-      min-height: 2rem;
       cursor: pointer;
       width: 90%;
       border-radius: 0.6rem;
-      padding: 0.4rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
+      padding-left: 0.4rem;
       transition: 0.5s ease-in-out;
       .avatar {
         img {
@@ -123,8 +121,15 @@ const Container = styled.div`
         }
       }
       .username {
+        flex-direction: column;
+        align-items: center;
         h3 {
           color: white;
+          margin-bottom: 0;
+        }
+        
+        h5 {
+          margin-top: 0.5rem;
         }
       }
     }
@@ -134,6 +139,8 @@ const Container = styled.div`
     .selected {
       transition: 0.5s ease-in-out;
       background: #404040ef;
+      display: flex;
+      align-items: center;
       
       .username {
         h3 {

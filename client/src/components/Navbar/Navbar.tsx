@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ProSidebar, Menu, MenuItem, SidebarHeader, SidebarFooter, SidebarContent } from "react-pro-sidebar";
-import { FaList, FaComment,FaUser } from "react-icons/fa";
+import { FaList, FaComment, FaUser, FaPaperPlane,FaUserPlus, FaUserAstronaut, FaUsers } from "react-icons/fa6";
 import { FiHome, FiLogOut, FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
 import { RiPencilLine } from "react-icons/ri";
 import { SiApacheairflow } from "react-icons/si";
@@ -12,6 +12,7 @@ import styled from "styled-components";
 import axios from "axios";
 import { logoutRoute } from "../../utils/APIRoutes";
 import Logo from "../../assets/neutrino.png";
+
 
 const Sidenav = () => {
 
@@ -44,19 +45,22 @@ const Sidenav = () => {
           </SidebarHeader>
           <SidebarContent>
             <Menu iconShape="round">
-              <MenuItem active={true} icon={<FiHome />}>
-                Home
+              <MenuItem  icon={<FiHome />}>
+                Homepage
               </MenuItem>
-              <MenuItem icon={<FaList />}>Category</MenuItem>
-              <MenuItem icon={<FaComment />}>Favourite</MenuItem>
-              <MenuItem icon={<FaUser />}>Settings</MenuItem>
+              <MenuItem active={true} icon={<FaComment />}>Message</MenuItem>
+              <MenuItem icon={<FaUsers />}>Canal</MenuItem>
+              {//<MenuItem icon={<FaPaperPlane />}>Send Message</MenuItem>
+              }
+              
             </Menu>
           </SidebarContent>
           <SidebarFooter>
-            <Menu iconShape="square">
-              <MenuItem icon={<FiLogOut />} onClick={handleClick}>
-                Logout
-              </MenuItem>
+            <Menu iconShape="round">
+              <MenuItem icon={<FaUserAstronaut />}>Utilisateur</MenuItem>
+              {//<MenuItem icon={<FiLogOut />} onClick={handleClick}>Logout</MenuItem>
+              }
+                
             </Menu>
           </SidebarFooter>
         </ProSidebar>
@@ -66,3 +70,4 @@ const Sidenav = () => {
 };
 
 export default Sidenav;
+
