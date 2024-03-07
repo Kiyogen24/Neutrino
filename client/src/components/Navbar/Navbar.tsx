@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { ProSidebar, Menu, MenuItem, SidebarHeader, SidebarFooter, SidebarContent } from "react-pro-sidebar";
 import { FaList, FaComment, FaUser, FaPaperPlane,FaUserPlus, FaUserAstronaut, FaUsers } from "react-icons/fa6";
-import { FiHome, FiLogOut, FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
+import { AiOutlineMessage } from "react-icons/ai";
+import { IoHome } from "react-icons/io5";
 import { RiPencilLine } from "react-icons/ri";
 import { SiApacheairflow } from "react-icons/si";
 import { GiAbstract050 } from "react-icons/gi";
 import "react-pro-sidebar/dist/css/styles.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { BiPowerOff } from "react-icons/bi";
 import styled from "styled-components";
 import axios from "axios";
@@ -44,20 +45,24 @@ const Sidenav = () => {
             </div>
           </SidebarHeader>
           <SidebarContent>
-            <Menu iconShape="round">
-              <MenuItem  icon={<FiHome />}>
-                Homepage
+            <Menu iconShape="round" style = {{color: "white"}}>
+
+              <MenuItem active={true} icon={<FaComment style={{ fontSize: '18px' }} />}>
+                <Link to="/">Chat</Link>
               </MenuItem>
-              <MenuItem active={true} icon={<FaComment />}>Message</MenuItem>
-              <MenuItem icon={<FaUsers />}>Canal</MenuItem>
-              {//<MenuItem icon={<FaPaperPlane />}>Send Message</MenuItem>
+              <MenuItem icon={<FaUsers style={{ fontSize: '18px' }} />}>
+                <Link to="/groups">Canal</Link>
+              </MenuItem>
+              {//<MenuItem icon={<FaPaperPlane style={{ fontSize: '18px' }} />}>Send Message</MenuItem>
               }
               
             </Menu>
           </SidebarContent>
           <SidebarFooter>
-            <Menu iconShape="round">
-              <MenuItem icon={<FaUserAstronaut />}>Utilisateur</MenuItem>
+            <Menu iconShape="round" style = {{color: "white"}}>
+              <MenuItem icon={<FaUserAstronaut style={{ fontSize: '18px' }} />}  onClick={handleClick}>
+                Utilisateur
+              </MenuItem>
               {//<MenuItem icon={<FiLogOut />} onClick={handleClick}>Logout</MenuItem>
               }
                 
@@ -70,4 +75,3 @@ const Sidenav = () => {
 };
 
 export default Sidenav;
-

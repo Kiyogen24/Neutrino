@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Logo from "../assets/neutrino.png"
 
 
-export default function Contacts({ contacts, changeChat }) {
+export default function GroupContacts({ groups, changeGroup }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const [data, setData] = useState(undefined);
@@ -27,9 +27,9 @@ export default function Contacts({ contacts, changeChat }) {
     }
   }, [data]);
 
-  const changeCurrentChat = (index, contact) => {
+  const changeCurrentGroupChat = (index, group) => {
     setCurrentSelected(index);
-    changeChat(contact);
+    changeGroup(group);
   };
   
   return (
@@ -39,19 +39,18 @@ export default function Contacts({ contacts, changeChat }) {
           <h2>Neutrino</h2>
         </div>
         <div className="separator"></div>
-        <div className="contacts">
-          {contacts.map((contact, index) => {
+        <div className="groups">
+          {Array.isArray(groups) && groups.map((group, index) => {
             return (
               <div
-                key={contact._id}
-                className={`contact ${
+                key={group._id}
+                className={`group ${
                   index === currentSelected ? "selected" : ""
                 }`}
-                onClick={() => changeCurrentChat(index, contact)}
+                onClick={() => changeCurrentGroupChat(index, group)}
               >
                 <div className="username">
-                  <h3>{contact.surname}</h3>
-                  <h5>{'@'+contact.username}</h5>
+                  <h3>{group.name}</h3>
                 </div>
               </div>
             );
@@ -97,7 +96,7 @@ const Container = styled.div`
     height: 1px;
     background: #101010;
   }
-  .contacts {
+  .groups {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -109,7 +108,7 @@ const Container = styled.div`
         width: 0.1rem;
       }
     }
-    .contact {
+    .group {
       cursor: pointer;
       width: 90%;
       border-radius: 0.6rem;
@@ -128,12 +127,10 @@ const Container = styled.div`
           margin-bottom: 0;
         }
         
-        h5 {
-          margin-top: 0.5rem;
-        }
+
       }
     }
-    .contact:hover {
+    .group:hover {
       background-color: #303030ef;
     }
     .selected {

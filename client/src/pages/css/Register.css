@@ -30,10 +30,11 @@
 .formulaire .container {
     display: flex;
     justify-content: center;
-
+    overflow-y: auto;
 }
 
 .formulaire .contenu {
+    height: 100vh;
     padding: 40px;
     margin-bottom: 40px;
     color: rgb(12, 12, 20);
@@ -57,7 +58,7 @@
 .formulaire .contenu .header h2 strong {
     background: #03045F; 
     background: -webkit-linear-gradient(to top, #03045F, #00B6DA); 
-    background: linear-gradient(to top, #03045F 0%, #00B6DA 85%);
+    background: linear-gradient(to right, #03045F 0%, #2C4E7D 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -89,7 +90,7 @@
     border-radius: 8px;
     padding-left: 15px;
     font-size: 15px;
-    border: 2px solid #00B6DA;
+    border: 2px solid #5889CF;
     box-sizing: border-box;
     outline: none;
     transition: .2s;
@@ -283,6 +284,13 @@
         width: 100%;
     }
     .formulaire .navigation {
-        display: none;
+        padding: 5px 10px;
+        height: 5%;
+    }
+    
+    .formulaire .navigation > div {
+        background-color: white;
+        padding: 5px 10px;
+
     }
 }

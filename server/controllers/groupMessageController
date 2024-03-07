@@ -1,0 +1,40 @@
+const GroupMessage = require("../models/groupMessageModel");
+
+module.exports.sendMessageToGroup = async (req, res, next) => {
+  try {
+    const { groupId, senderId, message } = req.body;
+
+    // Create a new group message
+    const newGroupMessage = new GroupMessage({
+      groupId,
+      senderId,
+      message
+    });
+
+    // Save the message to the database
+    const savedMessage = await newGroupMessage.save();
+
+    // Send a success response
+    res.status(201).json(savedMessage);
+  } catch (error) {
+    // Handle errors
+    next(error);
+  }
+};
+
+module.exports.getGroupMessages = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+
+    // Retrieve all messages for the given group
+    const groupMessages = await GroupMessage.find({ groupId });
+
+    // Send the messages as a response
+    res.json(groupMessages);
+  } catch (error) {
+    // Handle errors
+    next(error);
+  }
+};
+
+// Add more controller methods as needed

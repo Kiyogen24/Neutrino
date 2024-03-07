@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { BsExclamationCircleFill } from "react-icons/bs"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import Logo from "../assets/neutrino.png"
-import GlobeIcon from "../assets/Globe.png"
+import { IoGlobeOutline } from "react-icons/io5";
 import Spinner from "../assets/Spinner.svg"
 import "./css/Register.css"
 //import Logo from "../assets/logo.png";
@@ -129,9 +129,9 @@ const Register = () => {
   return (
       <div className="formulaire">
           <div className="navigation">
-              <img src={Logo} alt="" />
-              <div>
-                  <img src={GlobeIcon} alt="" />
+                <img src={Logo} alt="" style={{ width: '100px', height: 'auto' }} />
+                <div>
+                  <IoGlobeOutline />
                   <span>Français</span>
               </div>
           </div>

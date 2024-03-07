@@ -10,7 +10,7 @@ import { AiOutlineInfoCircle } from "react-icons/ai"
 import { BsCheck2 } from "react-icons/bs"
 import Reaptcha from 'reaptcha';
 import Logo from "../assets/neutrino.png"
-import GlobeIcon from "../assets/Globe.png"
+import { IoGlobeOutline } from "react-icons/io5";
 import Spinner from "../assets/Spinner.svg"
 import "./css/Login.css"
 
@@ -19,7 +19,7 @@ const Login = () => {
 
   const toastOptions = {
   position: "bottom-right",
-  autoClose: 5000,
+  autoClose: 8000,
   pauseOnHover: true,
   draggable: true,
   theme: "light",
@@ -155,7 +155,7 @@ const Login = () => {
         <div className="navigation">
           <img src={Logo} alt="" style={{ width: '100px', height: 'auto' }} />
           <div>
-            <img src={GlobeIcon} alt="" />
+            <IoGlobeOutline />
             <span>Français</span>
           </div>
         </div>

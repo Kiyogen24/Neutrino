@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
+const Group = require("../models/groupModel");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 
 module.exports.login = async (req, res, next) => {
@@ -71,3 +73,55 @@ module.exports.logOut = (req, res, next) => {
   }
 };
 
+module.exports.createGroup = async (req, res, next) => {
+  try {
+    const { groupName, members } = req.body;
+    const group = await Group.create({ name: groupName, members });
+    return res.json({ status: true, group });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+/*
+module.exports.addMemberToGroup = async (req, res, next) => {
+  try {
+    const { groupId, memberId } = req.body;
+    const group = await Group.findById(groupId);
+    if (!group) return res.json({ msg: "Groupe non trouvé", status: false });
+    group.members.push(memberId);
+    await group.save();
+    return res.json({ status: true, group });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.removeMemberFromGroup = async (req, res, next) => {
+  try {
+    const { groupId, memberId } = req.body;
+    const group = await Group.findById(groupId);
+    if (!group) return res.json({ msg: "Groupe non trouvé", status: false });
+    const index = group.members.indexOf(memberId);
+    if (index === -1) return res.json({ msg: "Membre non trouvé dans le groupe", status: false });
+    group.members.splice(index, 1);
+    await group.save();
+    return res.json({ status: true, group });
+  } catch (ex) {
+    next(ex);
+  }
+};*/
+
+module.exports.getAllGroups = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const groups = await Group.find({ members: userId }).select([
+      "name",
+      "members",
+    ]);
+    console.log(groups);
+    return res.json({ status: true, groups });
+  } catch (ex) {
+    next(ex);
+  }
+};

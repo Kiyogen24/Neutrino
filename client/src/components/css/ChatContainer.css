@@ -79,6 +79,8 @@
   }
 }
 
+
+
 @media screen and (min-width: 720px) and (max-width: 1080px) {
   .message .content {
     max-width: 70%;
@@ -90,7 +92,7 @@
 }
 
 .sended .content {
-  background-color: #0078B8;
+  background-color: #03045F;
 }
 
 .recieved {
@@ -98,7 +100,7 @@
 }
 
 .recieved .content {
-  background-color: #03045F;
+  background-color: #101010;
 }
 
 .chat-messages {

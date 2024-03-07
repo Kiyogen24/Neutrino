@@ -1,18 +1,40 @@
 import React, { useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
-import { IoMdSend, IoMdHappy } from "react-icons/io";
+import { IoMdHappy } from "react-icons/io";
+import { FaPaperPlane } from "react-icons/fa6";
 import styled from "styled-components";
 
-export default function ChatInput({ handleSendMsg }) {
+export default function ChatInput({ handleSendMsg, socket  }) {
   const [msg, setMsg] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
+  let typingTimeout = null;
 
   const sendChat = (event) => {
     event.preventDefault();
     if (msg.length > 0) {
       handleSendMsg(msg);
       setMsg("");
+      clearTimeout(typingTimeout); 
     }
+  };
+
+  const handleKeyDown = () => {
+    setIsTyping(true); // Set typing status to true when key is pressed
+    clearTimeout(typingTimeout); // Clear any existing typing timeout
+    typingTimeout = setTimeout(() => {
+      setIsTyping(false); // Set typing status to false after a delay
+    }, 1000); // Adjust the delay as needed
+    socket.current.emit("typing");
+  };
+  
+  const handleKeyUp = () => {
+    setIsTyping(false); // Set typing status to false when key is released
+    clearTimeout(typingTimeout); // Clear any existing typing timeout
+    typingTimeout = setTimeout(() => {
+      socket.current.emit("stopTyping"); // Emit stopTyping event to server after a delay
+    }, 3000); // Adjust the delay as needed  
   };
 
   return (
@@ -30,17 +52,19 @@ export default function ChatInput({ handleSendMsg }) {
           )}
         </div>
       </div>
-      <form className="input-container" onSubmit={(event) => sendChat(event)}>
-        <input
-          type="text"
-          placeholder="Votre message..."
-          onChange={(e) => setMsg(e.target.value)}
-          value={msg}
-        />
+        <form className="input-container" onSubmit={(event) => sendChat(event)}>
+          <input 
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+            type="text"
+            placeholder="Votre message..."
+            onChange={(e) => setMsg(e.target.value)}
+            value={msg}
+          />
         <button type="submit">
-          <IoMdSend />
+          <FaPaperPlane />
         </button>
-      </form>
+        </form>
     </Container>
   );
 }

@@ -12,7 +12,9 @@ export default function ChatContainer({ currentChat, socket }) {
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [data, setData] = useState(undefined);
+  const [isTyping, setIsTyping] = useState(false);
   const user = sessionStorage.getItem('app-user');
+  
 
   useEffect(() => {
     const getMessage = async () => {
@@ -82,21 +84,37 @@ export default function ChatContainer({ currentChat, socket }) {
     }
   };
 
+
   useEffect(() => {
     if (socket.current) {
+      // Listen for typing event from other user
+      socket.current.on("typing", () => {
+        setIsTyping(true);
+      });
+
+      // Listen for stop typing event from other user
+      socket.current.on("stopTyping", () => {
+        setIsTyping(false);
+        console.log("Other user stopped typing.");
+      });
+
       socket.current.on("msg-recieve", (msg) => {
         setArrivalMessage({ fromSelf: false, message: msg });
+        console.log("Sent");
       });
     }
   }, []);
+
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage]);
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
+
+
 
   return (
     <div className="Container">
@@ -131,8 +149,11 @@ export default function ChatContainer({ currentChat, socket }) {
             </div>
           );
         })}
+        <div className="typing">
+          {isTyping && <p>{currentChat.surname} is typing...</p>}
+        </div>
       </div>
-      <ChatInput handleSendMsg={handleSendMsg} />
+      <ChatInput handleSendMsg={handleSendMsg} socket={socket}/>
     </div>
    
   );
