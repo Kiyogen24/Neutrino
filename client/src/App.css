@@ -20,8 +20,9 @@
 }
 
 html {
-  background: linear-gradient(to top right, white 20%, #93E1F0 100%) fixed;
-  background: url(./assets/background.jpg) fixed;
+  background: linear-gradient(to top right, white 20%, #93E1F0 100%) fixed no-repeat;
+  background: url(./assets/background.jpg) no-repeat fixed;
+  background-size: cover;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -37,6 +38,8 @@ html {
 body{
 	margin: 0 auto;
 }
+
+
 
 
 

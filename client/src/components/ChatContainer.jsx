@@ -149,9 +149,11 @@ export default function ChatContainer({ currentChat, socket }) {
             </div>
           );
         })}
-        <div className="typing">
-          {isTyping && <p>{currentChat.surname} is typing...</p>}
-        </div>
+          {isTyping && <div className="typing">
+            <div className="typing__dot"></div>
+            <div className="typing__dot"></div>
+            <div className="typing__dot"></div>
+        </div>}
       </div>
       <ChatInput handleSendMsg={handleSendMsg} socket={socket}/>
     </div>

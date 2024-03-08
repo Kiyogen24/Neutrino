@@ -20,7 +20,7 @@ router.get("/allgroups/:id", getAllGroups);
 router.get("/addmembertogroup/:id", addMemberToGroup);
 router.get("/removememberfromgroup/:id", removeMemberFromGroup);
 */
-router.get("/creategroup/:id", createGroup);
+router.post("/creategroup", createGroup);
 router.get("/logout/:id", logOut);
 
 

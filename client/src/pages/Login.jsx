@@ -189,6 +189,7 @@ const Login = () => {
                   value={password} 
                   onChange={e => setPassword(e.target.value)} 
                 />
+                
                 <div className="praised-yald">
                   {passwordHidden ? <FaRegEye onClick={() => setPasswordHidden(false)} /> : <FaRegEyeSlash onClick={() => setPasswordHidden(true)} />}
                 </div>

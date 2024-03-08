@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast, ToastContainer } from 'react-toastify';
-import { getAllGroups, host, createGroupRoute } from "../utils/APIRoutes";
+import { allUsersRoute, getAllGroups, host, createGroupRoute } from "../utils/APIRoutes";
 import GroupChatContainer from "../components/GroupChatContainer";
 import GroupContacts from "../components/GroupContacts";
 import Welcome from "../components/Welcome";
@@ -24,6 +24,7 @@ export default function GroupChat({ menuCollapse }) {
 
   const socket = useRef();
   const [groups, setGroups] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [currentGroup, setCurrentGroup] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(null);
   const [redirect, setRedirect] = useState(true);
@@ -58,7 +59,9 @@ export default function GroupChat({ menuCollapse }) {
       if (currentUser) {
         const response = await axios.get(`${getAllGroups}/${currentUser._id}`);
         setGroups(response.data.groups);
-        console.log(response.data.groups);
+        const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
+        setContacts(data.data);
+        console.log(data.data);
       }
     };
   
@@ -75,7 +78,7 @@ export default function GroupChat({ menuCollapse }) {
         <Sidebar />
         <div style={{display: "flex"}} className={menuCollapse === true ? "box collapsed" : "box"}>
           <div className="container">
-            <GroupContacts groups={groups} changeGroup={handleGroupChange} />
+            <GroupContacts contacts={contacts} groups={groups} changeGroup={handleGroupChange} />
             {currentGroup === undefined ? (
               <Welcome />
             ) : (

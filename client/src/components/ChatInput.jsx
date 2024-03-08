@@ -34,7 +34,7 @@ export default function ChatInput({ handleSendMsg, socket  }) {
     clearTimeout(typingTimeout); // Clear any existing typing timeout
     typingTimeout = setTimeout(() => {
       socket.current.emit("stopTyping"); // Emit stopTyping event to server after a delay
-    }, 3000); // Adjust the delay as needed  
+    }, 2000); // Adjust the delay as needed  
   };
 
   return (

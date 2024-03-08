@@ -75,8 +75,10 @@ module.exports.logOut = (req, res, next) => {
 
 module.exports.createGroup = async (req, res, next) => {
   try {
-    const { groupName, members } = req.body;
-    const group = await Group.create({ name: groupName, members });
+    const { name, admin, members } = req.body;
+    members.push(admin);
+    console.log(members);
+    const group = await Group.create({ name: name, admin: admin, members });
     return res.json({ status: true, group });
   } catch (ex) {
     next(ex);
@@ -119,7 +121,6 @@ module.exports.getAllGroups = async (req, res, next) => {
       "name",
       "members",
     ]);
-    console.log(groups);
     return res.json({ status: true, groups });
   } catch (ex) {
     next(ex);
