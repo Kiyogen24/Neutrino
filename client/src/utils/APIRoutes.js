@@ -9,5 +9,5 @@ export const createGroupRoute = `${host}/api/auth/creategroup`;
 export const removeMemberRoute = `${host}/api/auth/removememberfromgroup`;
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getmsg`;
-export const sendMessageToGroup = `${host}/api/messages/addgrpmsg`;
-export const getGroupMessages = `${host}/api/messages/getgrpmsg`;
+export const sendMessageToGroup = `${host}/api/grpmessages/addgrpmsg`;
+export const getGroupMessages = `${host}/api/grpmessages/getgrpmsg`;

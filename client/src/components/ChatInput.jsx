@@ -1,42 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import EmojiPicker from 'emoji-picker-react';
 import { IoMdHappy } from "react-icons/io";
 import { FaPaperPlane } from "react-icons/fa6";
 import styled from "styled-components";
 
-export default function ChatInput({ handleSendMsg, socket  }) {
+export default function ChatInput({ handleSendMsg, socket, data}) {
   const [msg, setMsg] = useState("");
+  const typingTimeout = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  let typingTimeout = null;
 
   const sendChat = (event) => {
     event.preventDefault();
     if (msg.length > 0) {
       handleSendMsg(msg);
       setMsg("");
-      clearTimeout(typingTimeout); 
+      clearTimeout(typingTimeout);
+      socket.current.emit("stopTyping"); 
     }
   };
 
-  const handleKeyDown = () => {
-    setIsTyping(true); // Set typing status to true when key is pressed
-    clearTimeout(typingTimeout); // Clear any existing typing timeout
-    typingTimeout = setTimeout(() => {
-      setIsTyping(false); // Set typing status to false after a delay
-    }, 1000); // Adjust the delay as needed
-    socket.current.emit("typing");
-  };
-  
-  const handleKeyUp = () => {
-    setIsTyping(false); // Set typing status to false when key is released
-    clearTimeout(typingTimeout); // Clear any existing typing timeout
-    typingTimeout = setTimeout(() => {
-      socket.current.emit("stopTyping"); // Emit stopTyping event to server after a delay
-    }, 2000); // Adjust the delay as needed  
-  };
+  const handleTyping = () => {
+    if (!isTyping) {
+      setIsTyping(true);
+      socket.current.emit("typing");
+    }
 
+    clearTimeout(typingTimeout.current);
+    typingTimeout.current = setTimeout(() => {
+      setIsTyping(false);
+      socket.current.emit("stopTyping"); 
+    }, 1000);
+  };
   return (
     <Container>
       <div className="button-container">
@@ -52,19 +48,20 @@ export default function ChatInput({ handleSendMsg, socket  }) {
           )}
         </div>
       </div>
-        <form className="input-container" onSubmit={(event) => sendChat(event)}>
-          <input 
-            onKeyDown={handleKeyDown}
-            onKeyUp={handleKeyUp}
-            type="text"
-            placeholder="Votre message..."
-            onChange={(e) => setMsg(e.target.value)}
-            value={msg}
-          />
+      <form className="input-container" onSubmit={(event) => sendChat(event)}>
+        <input 
+          type="text"
+          placeholder="Votre message..."
+          onChange={(e) => {
+            setMsg(e.target.value);
+            handleTyping(); // Call handleTyping function when input value changes
+          }}
+          value={msg}
+        />
         <button type="submit">
           <FaPaperPlane />
         </button>
-        </form>
+      </form>
     </Container>
   );
 }

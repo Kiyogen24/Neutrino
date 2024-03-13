@@ -12,7 +12,7 @@ const helmet = require("helmet");
 const expectCt = require('expect-ct');
 
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
@@ -45,6 +45,7 @@ app.use(
 );
 
 app.use(express.static("build"));
+
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));

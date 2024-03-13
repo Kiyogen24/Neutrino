@@ -7,6 +7,7 @@ import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import "./css/ChatContainer.css"
 
+
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
@@ -14,17 +15,17 @@ export default function ChatContainer({ currentChat, socket }) {
   const [data, setData] = useState(undefined);
   const [isTyping, setIsTyping] = useState(false);
   const user = sessionStorage.getItem('app-user');
+
+
   
 
   useEffect(() => {
     const getMessage = async () => {
       let userData;
       if (!user) {
-        console.log("localStorage.getItem('app-user'):", localStorage.getItem("app-user"));
         userData = await JSON.parse(localStorage.getItem("app-user"));
         setData(userData);
       } else {
-        console.log("user:", user);
         userData = await JSON.parse(user);
         setData(userData);
       }
@@ -35,7 +36,6 @@ export default function ChatContainer({ currentChat, socket }) {
           to: currentChat._id,
         });
         setMessages(response.data);
-        console.log(messages);
       }
     }
     getMessage();
@@ -45,11 +45,9 @@ export default function ChatContainer({ currentChat, socket }) {
     const getCurrentChat = async () => {
       if (currentChat) {
         if (!user) {
-          console.log("localStorage.getItem('app-user'):", localStorage.getItem("app-user"));
           
           await JSON.parse(localStorage.getItem("app-user"))._id;
         } else {
-          console.log("user:", user);
           await JSON.parse(user)._id
         }
       }
@@ -67,11 +65,13 @@ export default function ChatContainer({ currentChat, socket }) {
       setData(await JSON.parse(user));
     }
     if (data && currentChat) {
+      const timestamp = new Date().getTime();
       socket.current.emit("send-msg", {
         to: currentChat._id,
         from: data._id,
         msg,
       });
+      setIsTyping(false);
       await axios.post(sendMessageRoute, {
         from: data._id,
         to: currentChat._id,
@@ -79,7 +79,7 @@ export default function ChatContainer({ currentChat, socket }) {
       });
 
       const msgs = [...messages];
-      msgs.push({ fromSelf: true, message: msg });
+      msgs.push({ fromSelf: true, message: msg, sentAt: timestamp  });
       setMessages(msgs);
     }
   };
@@ -88,15 +88,16 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     if (socket.current) {
       // Listen for typing event from other user
-      socket.current.on("typing", () => {
-        setIsTyping(true);
-      });
+      socket.current.on("typing", (userId) => {
+        if (userId === currentChat._id) {
+          setIsTyping(true);
+    }});
 
       // Listen for stop typing event from other user
-      socket.current.on("stopTyping", () => {
-        setIsTyping(false);
-        console.log("Other user stopped typing.");
-      });
+      socket.current.on("stopTyping", (userId) => {
+        if (userId === currentChat._id) {
+          setIsTyping(false);
+    }});
 
       socket.current.on("msg-recieve", (msg) => {
         setArrivalMessage({ fromSelf: false, message: msg });
@@ -115,16 +116,22 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [messages]);
 
 
+  function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const formattedHours = hours % 24 || 24;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    return `${formattedHours}:${formattedMinutes}`;
+  }
+
 
   return (
     <div className="Container">
       <div className="chat-header">
         <div className="user-details">
           <div className="avatar">
-            <img
-              src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
-              alt=""
-            />
+
           </div>
           <div className="username">
             <h3>{currentChat.surname}</h3>
@@ -135,19 +142,20 @@ export default function ChatContainer({ currentChat, socket }) {
       </div>
       <div className="chat-messages">
         {messages.map((message) => {
-          return (
+            return (
             <div ref={scrollRef} key={uuidv4()}>
               <div
-                className={`message ${
-                  message.fromSelf ? "sended" : "recieved"
-                }`}
+              className={`message ${
+                message.fromSelf ? "sended" : "recieved"
+              }`}
               >
-                <div className="content ">
-                  <p>{message.message}</p>
-                </div>
+              <div className="content ">
+                <p className="text">{message.message}</p>
+                <p className="date">{formatTime(message.sentAt)}</p>
+              </div>
               </div>
             </div>
-          );
+            );
         })}
           {isTyping && <div className="typing">
             <div className="typing__dot"></div>
@@ -155,7 +163,7 @@ export default function ChatContainer({ currentChat, socket }) {
             <div className="typing__dot"></div>
         </div>}
       </div>
-      <ChatInput handleSendMsg={handleSendMsg} socket={socket}/>
+        <ChatInput handleSendMsg={handleSendMsg} socket={socket} data={data}/>
     </div>
    
   );

@@ -148,6 +148,13 @@ const Login = () => {
     }
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleLogin(event);
+      console.log("caca");
+    }
+  }
+
 
   return (
     redirect === false ? (

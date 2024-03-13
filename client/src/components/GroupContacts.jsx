@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { createGroupRoute } from "../utils/APIRoutes";
 import axios from "axios";
 import styled from "styled-components";
+import { toast, ToastContainer } from 'react-toastify';
 import { FaRegSquarePlus } from "react-icons/fa6";
 import Logo from "../assets/neutrino.png"
 
@@ -12,6 +13,15 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [data, setData] = useState(undefined);
   const [showChooseMembers, setShowChooseMembers] = useState(false); // Add state for showing/hiding the choose members div
+  
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: 5000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "light",
+  };
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -48,14 +58,20 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
     }
   };
 
-  const handleSubmitGroup = async () => {
+  const handleSubmitGroup = async (e) => {
     // Logic to create a group with selected members
     // You can access the selected members from the state or any other source
     // Perform the necessary actions to create the group
-  
-    // Add your user data to the selectedContacts state
-    if (data) {
-      setSelectedContacts(prevContacts => [...prevContacts, data]);
+    if (selectedContacts.length === 0) {
+      e.preventDefault();
+      toast.error("Séléctionnez au moins une personne pour créer un groupe.", toastOptions);
+      return; // Exit the function to prevent further execution
+    }
+
+    if (!groupName) {
+      e.preventDefault();
+      toast.error("Veuillez entrer un nom de groupe.", toastOptions);
+      return; // Exit the function to prevent further execution
     }
 
     // Create the group object
@@ -69,8 +85,10 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
       // Make an API call or a database query to create the group
       // For example, using axios to make a POST request to an API endpoint
       const response = await axios.post(`${createGroupRoute}`, group);
+      console.log(response.data);
       // Handle the response as needed
     } catch (error) {
+      alert(error);
       console.error(error); // Handle the error
     }
   
@@ -111,7 +129,7 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
               {contacts.map((contact, index) => {
                 return (
                   <div key={contact._id} className="checkbox-wrapper-13">
-                    <label for="c1-13">{"@" + contact.username}</label>
+                    <label htmlFor="c1-13">{"@" + contact.username}</label>
                     <input id="c1-13" 
                       type="checkbox"
                       onChange={(e) => handleCheckboxChange(contact, e.target.checked)}
@@ -120,15 +138,18 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
                 );
               })}
             </div>
-            <button onClick={handleSubmitGroup}>Submit</button>
+            <button className="createGroup" onClick={handleSubmitGroup}>Submit</button>
           </form>
         )}
+        {/*
         <div className="current-user">
           <div className="avatar"></div>
           <div className="username">
             <h2>{currentUserName}</h2>
           </div>
         </div>
+            */}
+            <ToastContainer />
       </Container>
     </>
   );
@@ -177,7 +198,28 @@ const Container = styled.div`
     backdrop-filter: blur(8px);
     overflow-y: auto;
   }
-
+  .brand button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  // Submit button
+  .createGroup {
+    background-color: #4db6c4;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .createGroup:hover {
+    background-color: #3a9ca6;
+  }
 .exit {
   position: absolute; /* Add this line to make the position absolute */
   top: 0.5rem; /* Adjust the top position as needed */
