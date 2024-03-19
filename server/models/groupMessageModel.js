@@ -13,14 +13,13 @@ const groupMessageSchema = new mongoose.Schema({
     required: true
   },
   message: {
-    type: String,
-    required: true
+    text: { type: String, required: true },
   },
-  timestamp: {
-    type: Date,
-    default: Date.now
+},
+  {
+  timestamps: true
   }
-});
+);
 
 // Create the Mongoose model for group messages
 const GroupMessage = mongoose.model('GroupMessage', groupMessageSchema);

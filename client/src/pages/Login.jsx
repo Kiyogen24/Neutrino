@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { loginRoute } from "../utils/APIRoutes";
+import { loginRoute, host } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
 import { BsExclamationCircleFill } from "react-icons/bs"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
@@ -13,6 +13,7 @@ import Logo from "../assets/neutrino.png"
 import { IoGlobeOutline } from "react-icons/io5";
 import Spinner from "../assets/Spinner.svg"
 import "./css/Login.css"
+import { io } from "socket.io-client";
 
 
 const Login = () => {
@@ -25,13 +26,13 @@ const Login = () => {
   theme: "light",
   };
 
+  const socket = useRef();
   const [captchaToken, setCaptchaToken] = useState(null);
   const captchaRef = useRef(null);
 
   const verify = () =>{
           captchaRef.current.getResponse().then(res => {
               setCaptchaToken(res);
-              console.log(captchaToken)
           })
 
       }
@@ -48,6 +49,12 @@ const Login = () => {
   const [showRecaptcha, setShowRecaptcha] = useState(false) // Add state for reCAPTCHA
   
   const navigate = useNavigate()
+
+  useEffect(() => {
+    socket.current = io(host);
+    socket.current.emit("reception");
+    }, []);
+
 
   useEffect(() => {
     document.title = "Neutrino — Connexion"

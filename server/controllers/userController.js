@@ -32,16 +32,20 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.register = async (req, res, next) => {
   try {
-    const { username, surname, password } = req.body;
+    const { username, surname, password, publicKey } = req.body;
     const usernameCheck = await User.findOne({ username });
+    const keyCheck = await User.findOne({ publicKey });
     if (usernameCheck)
       return res.json({ msg: "Ce nom d'utilisateur est déjà utilisé", status: false });
-    
+    if (keyCheck)
+      return res.json({ msg: "Veuillez réessayer", status: false });
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
       surname,
       password: hashedPassword,
+      publicKey,
     });
     delete user.password;
     return res.json({ status: true, user });
@@ -80,6 +84,18 @@ module.exports.createGroup = async (req, res, next) => {
     console.log(members);
     const group = await Group.create({ name: name, admin: admin, members });
     return res.json({ status: true, group });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getGroupMembers = async (req, res, next) => {
+  try {
+    const { groupId, userId } = req.body;
+    const group = await Group.findById(groupId);
+    if (!group) return res.json({ msg: "Groupe non trouvé", status: false });
+    const members = group.members.filter(member => member !== userId);
+    return res.json({ status: true, members });
   } catch (ex) {
     next(ex);
   }

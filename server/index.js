@@ -12,12 +12,14 @@ const helmet = require("helmet");
 const expectCt = require('expect-ct');
 
 
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+
+app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/grpmessages", groupMessageRoutes);
 app.use(helmet());
+
 
 app.use(
   helmet.contentSecurityPolicy({
@@ -83,28 +85,70 @@ io.on("connection", (socket) => {
   global.chatSocket = socket;
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
+    socket.emit("user-added", userId); // Emit the userId back to the frontend
   });
 
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
-      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+      socket.to(sendUserSocket).emit("msg-recieve", (data));
     }
   });
 
+  socket.on("send-msg-grp", (data) => {
+    const members = data.members.members;
+    if (Array.isArray(members)) {
+      members.forEach((member) => {
+        const sendUserSocket = onlineUsers.get(member);
+        if (sendUserSocket) {
+          socket.to(sendUserSocket).emit("msg-grp-recieve", data);
+        }
+      });
+    } else {
+      console.log("Invalid members data");
+    }
+  });
+  socket.on("reception", () => {
+    console.log("marche");
+  });
+
     // Handle typing event
-    socket.on("typing", () => {
-      const userId = Array.from(onlineUsers.entries()).find(([key, value]) => value === socket.id)?.[0];
+    socket.on("typing", (userId) => {
       if (userId) {
         socket.broadcast.emit("typing", userId);
       }
     });
   
     // Handle stopTyping event
-    socket.on("stopTyping", () => {
-      const userId = Array.from(onlineUsers.entries()).find(([key, value]) => value === socket.id)?.[0];
+    socket.on("stopTyping", (userId) => {
       if (userId) {
         socket.broadcast.emit("stopTyping", userId);
+      }
+    });
+
+    socket.on("grp-typing", ([groupId, groupMembers]) => {
+      if (groupId && Array.isArray(groupMembers)) {
+      groupMembers.forEach((member) => {
+        const sendUserSocket = onlineUsers.get(member);
+        if (sendUserSocket) {
+        socket.to(sendUserSocket).emit("grp-typing", groupId);
+        }
+      });
+      } else {
+      console.log("Invalid group typing data");
+      }
+    });
+    
+    socket.on("grp-stopTyping", ([groupId, groupMembers]) => {
+      if (groupId && Array.isArray(groupMembers)) {
+      groupMembers.forEach((member) => {
+        const sendUserSocket = onlineUsers.get(member);
+        if (sendUserSocket) {
+        socket.to(sendUserSocket).emit("grp-stopTyping", groupId);
+        }
+      });
+      } else {
+      console.log("Invalid group stopTyping data");
       }
     });
   });

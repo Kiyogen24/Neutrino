@@ -4,7 +4,7 @@ import { IoMdHappy } from "react-icons/io";
 import { FaPaperPlane } from "react-icons/fa6";
 import styled from "styled-components";
 
-export default function ChatInput({ handleSendMsg, socket, data}) {
+export default function ChatInput({ handleSendMsg, socket, data, Group}) {
   const [msg, setMsg] = useState("");
   const typingTimeout = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -17,20 +17,28 @@ export default function ChatInput({ handleSendMsg, socket, data}) {
       handleSendMsg(msg);
       setMsg("");
       clearTimeout(typingTimeout);
-      socket.current.emit("stopTyping"); 
+      socket.current.emit("stopTyping", data._id); 
     }
   };
 
   const handleTyping = () => {
     if (!isTyping) {
       setIsTyping(true);
-      socket.current.emit("typing");
+      if (Group != null) {
+        socket.current.emit("grp-typing", [Group[0], Group[1]])
+      } else {
+        socket.current.emit("typing", data._id);
+      }
     }
 
     clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => {
       setIsTyping(false);
-      socket.current.emit("stopTyping"); 
+      if (Group != null) {
+        socket.current.emit("grp-stopTyping", [Group[0], Group[1]])
+      } else {
+        socket.current.emit("stopTyping", data._id);
+      }
     }, 1000);
   };
   return (

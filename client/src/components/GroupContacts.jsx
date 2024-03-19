@@ -59,6 +59,7 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
   };
 
   const handleSubmitGroup = async (e) => {
+    e.preventDefault();
     // Logic to create a group with selected members
     // You can access the selected members from the state or any other source
     // Perform the necessary actions to create the group
@@ -85,13 +86,11 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
       // Make an API call or a database query to create the group
       // For example, using axios to make a POST request to an API endpoint
       const response = await axios.post(`${createGroupRoute}`, group);
-      console.log(response.data);
       // Handle the response as needed
     } catch (error) {
       alert(error);
       console.error(error); // Handle the error
     }
-  
     setShowChooseMembers(false); // Hide the choose members div after submitting
     console.log(selectedContacts);
     setSelectedContacts([]); // Clear the selectedContacts state

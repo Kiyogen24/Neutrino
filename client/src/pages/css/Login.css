@@ -189,7 +189,7 @@
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 50%;
     display: block;
-    transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+    transition: all 0.5s 0s cubic-bezier(0.55, 0, 0.1, 1);
     z-index: -1;
 }
 
@@ -204,24 +204,24 @@
     background-color: rgb(255, 255, 255);
     border-radius: 50%;
     display: block;
-    transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+    transition: all 0.5s 0s cubic-bezier(0.55, 0, 0.1, 1);
     z-index: -1;
 }
 
 .formulaire .contenu .redirection button:hover {
-    color: #000000;
-    border: 1px solid #03045F;
+    color: #03045F;
+    border: 2px solid #03045F;
 }
 
 .formulaire .contenu .redirection button:hover:before {
     top: -35%;
-    background-color: rgb(205, 238, 246);
+    background-color: rgb(255, 255, 255);
     transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
 }
 
 .formulaire .contenu .redirection button:hover:after {
     top: -45%;
-    background-color: rgb(205, 238, 246);
+    background-color: rgb(255, 255, 255);
     transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
 }
 

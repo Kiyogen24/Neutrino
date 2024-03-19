@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { registerRoute } from "../utils/APIRoutes";
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { useNavigate } from "react-router-dom";
+import { openDB } from 'idb';
 import { BsExclamationCircleFill } from "react-icons/bs"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import Logo from "../assets/neutrino.png"
@@ -56,8 +57,7 @@ const Register = () => {
   useEffect(() => {
       if (username.length >= 4 && username.length <= 20) {
           setErrors(prev => {
-            console.log("4");
-              return {...prev, username: undefined}
+            return {...prev, username: undefined}
           })
         } 
   }, [username])
@@ -94,30 +94,73 @@ const Register = () => {
             return true
           }
 
+
+          async function storePrivateKeyInIndexedDB(userId, privateKey) {
+            const db = await openIndexedDB();
+            const tx = db.transaction("privateKeys", "readwrite");
+            const store = tx.objectStore("privateKeys");
+            await store.put(privateKey, userId);
+            return tx.done;
+          }
+        
+          async function openIndexedDB() {
+            const db = await openDB("myApp", 1, {
+              upgrade(db) {
+                db.createObjectStore("privateKeys");
+              },
+            });
+            return db;
+          }
+        
+          async function generateKeys() {
+            const keyPair = await window.crypto.subtle.generateKey(
+              {
+                name: "RSA-OAEP",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: "SHA-256",
+              },
+              true,
+              ["encrypt", "decrypt"]
+            );
+            return keyPair;
+          }
+
+
           const handleRegister = () => {
             const init = async () => {
-              setLoading(true)
+                setLoading(true)
               
-              const response = await axios.post(registerRoute, {
-                username, 
-                surname: surname || username, // Si pas de pseudo, pseudo égale nom d'utilisateur
-                password,
-              })
+                // Générer une paire de clés
+                const keyPair = await generateKeys();
 
-              const data = response.data
-              console.log(data);
-              setLoading(false)
-
-              if (data.status === false) {
-                toast.error(data.msg, toastOptions);
-              }
-              if (data.status === true) {
-                localStorage.setItem(
-                  "app-user",
-                  JSON.stringify(data.user)
-                );
                 
-                navigate("/");
+                // Stocker la clé privée dans IndexedDB
+                await storePrivateKeyInIndexedDB(username, keyPair.privateKey);
+                
+                // Exporter la clé publique en format JWK
+                const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
+                alert(publicKeyJwk);  
+                const response = await axios.post(registerRoute, {
+                    username,
+                    surname: surname || username,
+                    password,
+                    publicKey: publicKeyJwk,
+                });
+
+                const data = response.data
+                setLoading(false)
+
+                if (data.status === false) {
+                    toast.error(data.msg, toastOptions);
+                }
+                if (data.status === true) {
+                    localStorage.setItem(
+                    "app-user",
+                    JSON.stringify(data.user)
+                    );
+                    
+                    navigate("/");
           }
       }
 

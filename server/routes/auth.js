@@ -3,6 +3,7 @@ const {
   login,
   getAllUsers,
   getAllGroups,
+  getGroupMembers,
   /*removeMemberFromGroup,
   addMemberToGroup,*/
   createGroup,
@@ -16,6 +17,7 @@ router.post("/login", login);
 router.post("/register", register);
 router.get("/allusers/:id", getAllUsers);
 router.get("/allgroups/:id", getAllGroups);
+router.post("/getgrpmbrs", getGroupMembers);
 /*
 router.get("/addmembertogroup/:id", addMemberToGroup);
 router.get("/removememberfromgroup/:id", removeMemberFromGroup);

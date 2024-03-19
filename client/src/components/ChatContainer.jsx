@@ -8,16 +8,59 @@ import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import "./css/ChatContainer.css"
 
 
-export default function ChatContainer({ currentChat, socket }) {
+export default function ChatContainer({ currentChat, socket, /*privateKey*/}) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [data, setData] = useState(undefined);
   const [isTyping, setIsTyping] = useState(false);
   const user = sessionStorage.getItem('app-user');
+  const currentChatRef = useRef(currentChat);
+  const isGroup = false;
 
 
+  useEffect(() => {
+    currentChatRef.current = currentChat;
+  }, [currentChat]);
+
+  /*
+  async function decryptMessages(privateKey, encryptedMessages) {
+    const decryptedMessages = [];
+    for (let encryptedMessage of encryptedMessages) {
+      try {
+        // Vérifier que le message est une chaîne en base64 valide
+        if (!/^[a-zA-Z0-9+/]*={0,2}$/.test(encryptedMessage)) {
+          throw new Error('encryptedMessage is not a valid base64 string');
+        }
   
+        // Convertir le message chiffré de base64 en ArrayBuffer
+        const encryptedMessageBuffer = Uint8Array.from(
+          atob(encryptedMessage),
+          (c) => c.charCodeAt(0)
+        );
+        
+        // Déchiffrer le message
+        const decryptedMessageBuffer = await window.crypto.subtle.decrypt(
+          {
+            name: "RSA-OAEP",
+          },
+          privateKey,
+          encryptedMessageBuffer
+          );
+  
+        // Convertir le message déchiffré en string
+        const decryptedMessage = new TextDecoder().decode(new Uint8Array(decryptedMessageBuffer));
+        alert(decryptedMessage);
+        decryptedMessages.push(decryptedMessage);
+      } catch (error) {
+        console.error('Failed to decrypt message:', encryptedMessage, error);
+      }
+    }
+  
+    return decryptedMessages;
+  }
+*/
+
 
   useEffect(() => {
     const getMessage = async () => {
@@ -35,7 +78,15 @@ export default function ChatContainer({ currentChat, socket }) {
           from: userData._id,
           to: currentChat._id,
         });
+        /*
+        let messagesData = Object.values(response.data).map(item => item.message);
+        console.log(messagesData);
+        let decryptedMessages = await decryptMessages(privateKey, messagesData);
+        console.log(decryptedMessages);
+        setMessages(decryptedMessages);
+        */
         setMessages(response.data);
+
       }
     }
     getMessage();
@@ -55,6 +106,35 @@ export default function ChatContainer({ currentChat, socket }) {
     getCurrentChat();
   }, [currentChat]);
 
+    /*
+  async function encryptMessage(publicKeyJwk, message) {
+    // Importer la clé publique
+    const publicKey = await window.crypto.subtle.importKey(
+      "jwk",
+      publicKeyJwk,
+      {
+        name: "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      true,
+      ["encrypt"]
+    );
+      alert(publicKey);
+    // Chiffrer le message
+    const encryptedMessage = await window.crypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP",
+      },
+      publicKey,
+      new TextEncoder().encode(message)
+    );
+  
+    // Convertir le message chiffré en base64 pour le rendre plus facile à manipuler
+    return btoa(String.fromCharCode(...new Uint8Array(encryptedMessage)));
+  }
+*/
+
+
   const handleSendMsg = async (msg) => {
     if (!user) {
       setData(await JSON.parse(
@@ -65,12 +145,13 @@ export default function ChatContainer({ currentChat, socket }) {
       setData(await JSON.parse(user));
     }
     if (data && currentChat) {
-      const timestamp = new Date().getTime();
+      //msg = await encryptMessage(data.publicKey, msg);
+      let timestamp = new Date().getTime();
       socket.current.emit("send-msg", {
         to: currentChat._id,
         from: data._id,
         msg,
-      });
+      }, data);
       setIsTyping(false);
       await axios.post(sendMessageRoute, {
         from: data._id,
@@ -84,27 +165,28 @@ export default function ChatContainer({ currentChat, socket }) {
     }
   };
 
-
   useEffect(() => {
     if (socket.current) {
-      // Listen for typing event from other user
       socket.current.on("typing", (userId) => {
-        if (userId === currentChat._id) {
+        if (currentChatRef.current && userId === currentChatRef.current._id) {
           setIsTyping(true);
-    }});
+        }
+      });
 
-      // Listen for stop typing event from other user
       socket.current.on("stopTyping", (userId) => {
-        if (userId === currentChat._id) {
+        if (currentChatRef.current && userId === currentChatRef.current._id) {
           setIsTyping(false);
-    }});
+        }
+      });
 
-      socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
-        console.log("Sent");
+      socket.current.on("msg-recieve", (data) => {
+        let timestamp = new Date().getTime();
+        if (currentChatRef.current && data.from === currentChatRef.current._id) {
+          setArrivalMessage({ fromSelf: false, message: data.msg, sentAt: timestamp });
+        }
       });
     }
-  }, []);
+  }, [socket]);
 
 
   useEffect(() => {
@@ -114,6 +196,12 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
+
+  useEffect(() => {
+    if (isTyping) {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isTyping]);
 
 
   function formatTime(timestamp) {
@@ -163,7 +251,7 @@ export default function ChatContainer({ currentChat, socket }) {
             <div className="typing__dot"></div>
         </div>}
       </div>
-        <ChatInput handleSendMsg={handleSendMsg} socket={socket} data={data}/>
+        <ChatInput handleSendMsg={handleSendMsg} socket={socket} data={data} Group={null}/>
     </div>
    
   );

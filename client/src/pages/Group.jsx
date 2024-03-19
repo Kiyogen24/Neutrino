@@ -40,7 +40,6 @@ export default function GroupChat({ menuCollapse }) {
       } else {
         setCurrentUser(JSON.parse(user));
         setRedirect(false);
-        console.log(user);
       }
     };
 
@@ -61,7 +60,6 @@ export default function GroupChat({ menuCollapse }) {
         setGroups(response.data.groups);
         const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
         setContacts(data.data);
-        console.log(data.data);
       }
     };
   

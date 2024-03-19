@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 8,
   },
+  publicKey: {
+    type: mongoose.Schema.Types.Mixed,
+    required: true,
+  }
 },
   {
     timestamps: true,
