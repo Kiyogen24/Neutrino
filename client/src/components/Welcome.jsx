@@ -15,7 +15,6 @@ export default function Welcome() {
       }
     };
     getUser();
-    console.log(userName);
   }, []);
 
   return (
@@ -34,7 +33,7 @@ const Container = styled.div`
   align-items: center;
   color: black;
   flex-direction: column;
-  background-color: #00000040;
+  background-color: hsla(0, 0%, 10%, 0.1);
   img {
     height: 20rem;
   }

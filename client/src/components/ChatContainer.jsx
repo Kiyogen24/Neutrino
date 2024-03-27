@@ -226,7 +226,7 @@ export default function ChatContainer({ currentChat, socket, /*privateKey*/}) {
             <h5>{'@'+currentChat.username}</h5>
           </div>
         </div>
-        <Logout />
+        
       </div>
       <div className="chat-messages">
         {messages.map((message) => {

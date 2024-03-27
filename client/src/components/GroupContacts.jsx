@@ -59,7 +59,6 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
   };
 
   const handleSubmitGroup = async (e) => {
-    e.preventDefault();
     // Logic to create a group with selected members
     // You can access the selected members from the state or any other source
     // Perform the necessary actions to create the group
@@ -157,27 +156,31 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
 
 
 const Container = styled.div`
-  display: grid;
-  rezise: horizontal;
-  grid-template-rows: 9% 1% 90% 0%;
-  overflow: hidden;
-  background-color: #101010;
-  .brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+display: grid;
+rezise: horizontal;
+grid-template-rows: 9% 1% 100% 0%;
+overflow: hidden;
+background-color: hsla(0, 0%, 10%, 0);
+  backdrop-filter: blur(12px);
+  border: 1px solid lightgrey;
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    h2 {
-      background: #03045F;
-      background: -webkit-linear-gradient(to top, #03045F, #00B6DA);
-      background: linear-gradient(to top, #03045F 0%, #00B6DA 85%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-left: 0;
-      display: none;
-    }
+  h2 {
+    background: #03045F; 
+    background: -webkit-linear-gradient(to top, #03045F, #00B6DA); 
+    background: linear-gradient(to top, #03045F 0%, #00B6DA 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: none;
+    margin-left: 0;
+
   }
+  
+}
   .choose-members {
     position: fixed;
     top: 50%;
@@ -187,7 +190,7 @@ const Container = styled.div`
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.2);
     color: white;
     z-index: 999;
     width: 50%;
@@ -195,19 +198,20 @@ const Container = styled.div`
     padding: 2rem;
     border-radius: 1rem;
     backdrop-filter: blur(8px);
-    overflow-y: auto;
+    overflow-y: none;
   }
   .brand button {
     background: none;
     border: none;
-    color: white;
+    color: #03045F;
     font-size: 1.5rem;
     cursor: pointer;
+
   }
   
   // Submit button
   .createGroup {
-    background-color: #4db6c4;
+    background-color: #BBC1E1;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -217,12 +221,12 @@ const Container = styled.div`
   }
   
   .createGroup:hover {
-    background-color: #3a9ca6;
+    background-color: #275EFE;
   }
 .exit {
   position: absolute; /* Add this line to make the position absolute */
-  top: 0.5rem; /* Adjust the top position as needed */
-  right: 0.5rem; /* Adjust the right position as needed */
+  top: 1rem; /* Adjust the top position as needed */
+  right: 1rem; /* Adjust the right position as needed */
   background: none;
   border: none;
   color: white;
@@ -258,7 +262,7 @@ const Container = styled.div`
   }
   .separator {
     height: 1px;
-    background: #101010;
+    background: hsla(0, 0%, 100%);;
   }
 
   @supports (-webkit-appearance: none) or (-moz-appearance: none) {
@@ -385,26 +389,23 @@ const Container = styled.div`
         flex-direction: column;
         align-items: center;
         h3 {
-          color: white;
+          color: #03045F;
           margin-bottom: 0;
         }
       }
     }
     .group:hover {
-      background-color: #303030ef;
+      background-color: hsla(0, 0%, 10%, 0.05);
     }
     .selected {
       transition: 0.5s ease-in-out;
-      background: #404040ef;
+      background-color: hsla(0, 0%, 10%, 0.1);
+      border: 1px solid hsla(0, 0%, 100%);
       display: flex;
       align-items: center;
       .username {
         h3 {
-          background: -webkit-linear-gradient(to bottom, #fff, #00B6DA);
-          background: linear-gradient(to bottom, #fff 0%, #00B6DA 85%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          color: #03045F;
         }
       }
     }

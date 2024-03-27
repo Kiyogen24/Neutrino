@@ -59,6 +59,9 @@ export default function Chat({ menuCollapse }) {
 
     fetchUser();
   }, []);
+
+
+
   async function getPrivateKeyFromIndexedDB(userId) {
     const db = await openIndexedDB();
     const tx = db.transaction("privateKeys", "readonly");

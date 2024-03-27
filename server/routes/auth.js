@@ -2,6 +2,7 @@ const {
   register,
   login,
   getAllUsers,
+  setAvatar,
   getAllGroups,
   getGroupMembers,
   /*removeMemberFromGroup,
@@ -16,6 +17,7 @@ const router = require("express").Router();
 router.post("/login", login);
 router.post("/register", register);
 router.get("/allusers/:id", getAllUsers);
+router.post("/setavatar/:id", setAvatar);
 router.get("/allgroups/:id", getAllGroups);
 router.post("/getgrpmbrs", getGroupMembers);
 /*

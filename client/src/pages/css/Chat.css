@@ -9,7 +9,15 @@
 
 
 #header .pro-sidebar-inner {
-    background-color: #101010;
+    background-color: #fff;
+}
+
+#header .pro-icon-wrapper {
+    background-color: lightgrey;
+}
+
+#header .pro-icon:hover {
+    background-color: rgb(255, 255, 255);
 }
 
 .logotext {
@@ -31,6 +39,7 @@
     width: 100%;
     background: linear-gradient(to top right, white 20%, #93E1F0 100%) fixed no-repeat;
     background: url(../../assets/background.png) no-repeat fixed;
+    
     background-size: cover;
     display: grid;
     grid-template-columns: 20% 80%;

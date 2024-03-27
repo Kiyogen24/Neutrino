@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 8,
   },
+  avatarImage: {
+    type: String,
+    default: "",
+  },
   publicKey: {
     type: mongoose.Schema.Types.Mixed,
     required: true,

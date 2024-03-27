@@ -12,3 +12,4 @@ export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getmsg`;
 export const sendMessageToGroup = `${host}/api/grpmessages/addgrpmsg`;
 export const getGroupMessages = `${host}/api/grpmessages/getgrpmsg`;
+export const setAvatarRoute = `${host}/api/auth/setavatar`;

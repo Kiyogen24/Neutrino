@@ -36,7 +36,7 @@ export default function Contacts({ contacts, changeChat }) {
     <>
       <Container>
         <div className="brand">
-          <h2>Neutrino</h2>
+          <h2>Contacts</h2>
         </div>
         <div className="separator"></div>
         <div className="contacts">
@@ -73,9 +73,11 @@ export default function Contacts({ contacts, changeChat }) {
 const Container = styled.div`
   display: grid;
   rezise: horizontal;
-  grid-template-rows: 0% 1% 100% 0%;
+  grid-template-rows: 0% 0% 100% 0%;
   overflow: hidden;
-  background-color: #101010;
+  background-color: hsla(0, 0%, 10%, 0);
+    backdrop-filter: blur(8px);
+    border: 1px solid lightgrey;
   .brand {
     display: flex;
     align-items: center;
@@ -88,14 +90,16 @@ const Container = styled.div`
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin-left: 0;
       display: none;
+      margin-left: 0;
+
     }
     
   }
   .separator {
     height: 1px;
-    background: #101010;
+    background: #fff;
+   
   }
   .contacts {
     display: flex;
@@ -124,7 +128,7 @@ const Container = styled.div`
         flex-direction: column;
         align-items: center;
         h3 {
-          color: white;
+          color: #03045F;
           margin-bottom: 0;
         }
         
@@ -134,21 +138,19 @@ const Container = styled.div`
       }
     }
     .contact:hover {
-      background-color: #303030ef;
+      background-color: hsla(0, 0%, 10%, 0.05);
     }
     .selected {
       transition: 0.5s ease-in-out;
-      background: #404040ef;
       display: flex;
       align-items: center;
+      background-color: hsla(0, 0%, 10%, 0.1);
+   
+      border: 1px solid hsla(0, 0%, 100%);
       
       .username {
         h3 {
-          background: -webkit-linear-gradient(to bottom, #fff, #00B6DA); 
-          background: linear-gradient(to bottom, #fff 0%, #00B6DA 85%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          color: #03045F;
         }
       }
     }
@@ -178,6 +180,4 @@ const Container = styled.div`
           font-size: 1rem;
         }
       }
-    }
-  }
-`;
+    }`;

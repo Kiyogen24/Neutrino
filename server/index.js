@@ -14,7 +14,7 @@ const expectCt = require('expect-ct');
 
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/grpmessages", groupMessageRoutes);
@@ -52,8 +52,6 @@ app.use(express.static("build"));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
-
-
 
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -96,7 +94,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-msg-grp", (data) => {
-    const members = data.members.members;
+    const members = data.members;
+    console.log(members);
     if (Array.isArray(members)) {
       members.forEach((member) => {
         const sendUserSocket = onlineUsers.get(member);

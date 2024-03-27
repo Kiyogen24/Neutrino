@@ -26,7 +26,7 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family : "Galey 1", "Open Sans",-apple-system, BlinkMacSystemFont,'Segoe UI', "Galey 1";
+  font-family : -apple-system, BlinkMacSystemFont,'Open sans', 'Segoe UI', "Galey 1";
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;

@@ -78,7 +78,9 @@ const Container = styled.div`
   display: grid;
   align-items: center;
   grid-template-columns: 5% 95%;
-  background-color: #101010;
+  background-color: hsla(0, 0%, 10%, 0);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsla(0, 0%, 100%);
   padding: 0 2rem;
 
   @media screen and (min-width: 720px) and (max-width: 1080px) {
@@ -110,6 +112,7 @@ const Container = styled.div`
     .input-container {
       input {
         font-size: 1rem;
+        color: #03045F;
       }
 
       button {
@@ -133,7 +136,7 @@ const Container = styled.div`
 
       svg {
         font-size: 1.5rem;
-        color: #ffff00c8;
+        color: #101010;
         cursor: pointer;
       }
 
@@ -179,12 +182,13 @@ const Container = styled.div`
     align-items: center;
     gap: 2rem;
     background-color: #ffffff34;
+    border : 1px solid lightgrey;
 
     input {
       width: 90%;
       height: 60%;
       background-color: transparent;
-      color: white;
+      color: #101010;
       border: none;
       padding-left: 1rem;
       font-size: 1.2rem;
@@ -204,7 +208,7 @@ const Container = styled.div`
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #03045F;
+      background-color: #275EFE;
       border: none;
 
       @media screen and (min-width: 720px) and (max-width: 1080px) {
