@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import EmojiPicker from 'emoji-picker-react';
-import { IoMdHappy } from "react-icons/io";
+import { BsEmojiSmile } from "react-icons/bs";
 import { FaPaperPlane } from "react-icons/fa6";
 import styled from "styled-components";
 
@@ -45,7 +45,7 @@ export default function ChatInput({ handleSendMsg, socket, data, Group}) {
     <Container>
       <div className="button-container">
         <div className="emoji">
-          <IoMdHappy onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
+          <BsEmojiSmile onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
           {showEmojiPicker && (
             <div className={showEmojiPicker ? "emoji-picker-react show" : "emoji-picker-react"}>
               <EmojiPicker onEmojiClick={(emojiObject)=> {
@@ -135,8 +135,8 @@ const Container = styled.div`
       position: relative;
 
       svg {
-        font-size: 1.5rem;
-        color: #101010;
+        font-size: 1.8rem;
+        color: #03045F;
         cursor: pointer;
       }
 
