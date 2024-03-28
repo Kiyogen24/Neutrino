@@ -13,7 +13,7 @@ const expectCt = require('expect-ct');
 
 
 
-app.use(cors());
+app.use(cors({origin : '*'}));
 app.use(express.json({limit: '50mb'}));
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
@@ -53,6 +53,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -67,13 +68,12 @@ mongoose
 
 
 
-
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on ${process.env.PORT}`)
 );
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     credentials: true,
   },
 });
@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
   global.chatSocket = socket;
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
-    socket.emit("user-added", userId); // Emit the userId back to the frontend
+    socket.emit("user-added", userId);
   });
 
   socket.on("send-msg", (data) => {
@@ -107,6 +107,7 @@ io.on("connection", (socket) => {
       console.log("Invalid members data");
     }
   });
+
   socket.on("reception", () => {
     console.log("marche");
   });

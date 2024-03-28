@@ -139,8 +139,7 @@ const Register = () => {
                 await storePrivateKeyInIndexedDB(username, keyPair.privateKey);
                 
                 // Exporter la clé publique en format JWK
-                const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
-                alert(publicKeyJwk);  
+                const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey); 
                 const response = await axios.post(registerRoute, {
                     username,
                     surname: surname || username,

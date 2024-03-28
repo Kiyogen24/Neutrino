@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "homepage": "https://neutrino-chat.com/",
+  "homepage": "http://neutrino-chat.com/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
