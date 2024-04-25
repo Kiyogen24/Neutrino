@@ -30,7 +30,7 @@ module.exports.getGroupMessages = async (req, res, next) => {
       const user = await User.findById(msg.senderId);
       return {
         fromSelf: msg.senderId.toString() === userId,
-        fromUser: user ? user.surname : '', // Add the username to the response
+        fromUser: user ? [user._id,user.surname] : '', // Add the username to the response
         message: msg.message.text,
         sentAt: msg.createdAt,
       };

@@ -50,8 +50,8 @@ export default function Contacts({ contacts, changeChat }) {
                 onClick={() => changeCurrentChat(index, contact)}
               >
                 <div className="username">
-                  <h3>{contact.surname}</h3>
-                  <h5>{'@'+contact.username}</h5>
+                  <h4>{contact.surname}</h4>
+                  <h6>{'@'+contact.username}</h6>
                 </div>
               </div>
             );
@@ -75,33 +75,34 @@ const Container = styled.div`
   rezise: horizontal;
   grid-template-rows: 0% 0% 100% 0%;
   overflow: hidden;
-  background-color: hsla(0, 0%, 10%, 0);
-    backdrop-filter: blur(8px);
-    border: 1px solid lightgrey;
+  background-color: white;
+  backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(39, 94, 254, 0.2);
   .brand {
     display: flex;
     align-items: center;
     justify-content: center;
 
     h2 {
-      background: #03045F; 
-      background: -webkit-linear-gradient(to top, #03045F, #00B6DA); 
+      background: #03045F;
+      background: -webkit-linear-gradient(to top, #03045F, #00B6DA);
       background: linear-gradient(to top, #03045F 0%, #00B6DA 85%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       display: none;
       margin-left: 0;
-
     }
-    
   }
   .separator {
     height: 1px;
     background: #fff;
-   
   }
   .contacts {
+    position: fixed;
+    top: 0;
+    width: 70%;
+    left: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -118,7 +119,7 @@ const Container = styled.div`
       width: 90%;
       border-radius: 0.6rem;
       padding-left: 0.4rem;
-      transition: 0.5s ease-in-out;
+      transition: 0.3s ease-in-out;
       .avatar {
         img {
           height: 3rem;
@@ -127,13 +128,17 @@ const Container = styled.div`
       .username {
         flex-direction: column;
         align-items: center;
-        h3 {
+        h4 {
           color: #03045F;
           margin-bottom: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        
-        h5 {
+
+        h6 {
           margin-top: 0.5rem;
+          color: rgb(170, 170, 170);
         }
       }
     }
@@ -144,13 +149,20 @@ const Container = styled.div`
       transition: 0.5s ease-in-out;
       display: flex;
       align-items: center;
-      background-color: hsla(0, 0%, 10%, 0.1);
-   
-      border: 1px solid hsla(0, 0%, 100%);
-      
+      background-color: #f1f1f1;
+      border: 1px solid #275EFE;
+
       .username {
-        h3 {
-          color: #03045F;
+        margin-bottom: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        h4 {
+          color: #275EFE;
+          margin-bottom: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }
@@ -180,4 +192,16 @@ const Container = styled.div`
           font-size: 1rem;
         }
       }
-    }`;
+    }
+  }
+  @media screen and (max-width: 720px) {
+    .contacts {
+      left: 0;
+    }
+  }
+  @media screen and (max-width: 480px) {
+    .contacts {
+      left: 0;
+    }
+  }
+`;

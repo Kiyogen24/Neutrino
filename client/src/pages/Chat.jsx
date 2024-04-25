@@ -41,6 +41,9 @@ export default function Chat({ menuCollapse }) {
       if (!user) {
         navigate("/login");
       } else {
+        Notification.requestPermission().then((result) => {
+          console.log("Notifications :", result);
+        });
         setCurrentUser(JSON.parse(user));
         setRedirect(false);
         // Récupérez la clé privée de IndexedDB
@@ -125,7 +128,9 @@ export default function Chat({ menuCollapse }) {
   return (
     redirect === false ? (
     <div className="all">
+      <div>
     <Sidebar />
+    </div>
     <div style={{display: "flex"}} className={menuCollapse === true ? "box collapsed" : "box"}>
         <div className="container">
           <Contacts contacts={contacts} changeChat={handleChatChange} />

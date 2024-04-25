@@ -3,6 +3,8 @@ const {
   login,
   getAllUsers,
   setAvatar,
+  getUsersAvatars,
+  getMembersAvatars,
   getAllGroups,
   getGroupMembers,
   /*removeMemberFromGroup,
@@ -18,6 +20,8 @@ router.post("/login", login);
 router.post("/register", register);
 router.get("/allusers/:id", getAllUsers);
 router.post("/setavatar/:id", setAvatar);
+router.post("/getusersavatars", getUsersAvatars);
+router.post("/getmembersavatars", getMembersAvatars);
 router.get("/allgroups/:id", getAllGroups);
 router.post("/getgrpmbrs", getGroupMembers);
 /*

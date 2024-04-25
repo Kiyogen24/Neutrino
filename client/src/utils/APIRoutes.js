@@ -1,4 +1,4 @@
-export const host = "https://chocodingo.fr:443";
+export const host = "http://localhost:5000";
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;
 export const logoutRoute = `${host}/api/auth/logout`;
@@ -13,3 +13,5 @@ export const recieveMessageRoute = `${host}/api/messages/getmsg`;
 export const sendMessageToGroup = `${host}/api/grpmessages/addgrpmsg`;
 export const getGroupMessages = `${host}/api/grpmessages/getgrpmsg`;
 export const setAvatarRoute = `${host}/api/auth/setavatar`;
+export const getUsersAvatars = `${host}/api/auth/getusersavatars`;
+export const getMembersAvatars = `${host}/api/auth/getmembersavatars`;

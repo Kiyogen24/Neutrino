@@ -1,11 +1,15 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from "react-icons/bs";
-import { FaPaperPlane } from "react-icons/fa6";
+import { FaPaperPlane, FaRegImage } from "react-icons/fa6";
 import styled from "styled-components";
+import imageCompression from 'browser-image-compression';
+import Emoji from "../assets/emoji.png";
 
 export default function ChatInput({ handleSendMsg, socket, data, Group}) {
+  const divRef = useRef();
   const [msg, setMsg] = useState("");
+  const [img, setImg] = useState(undefined);
   const typingTimeout = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -13,13 +17,40 @@ export default function ChatInput({ handleSendMsg, socket, data, Group}) {
 
   const sendChat = (event) => {
     event.preventDefault();
-    if (msg.length > 0) {
-      handleSendMsg(msg);
-      setMsg("");
-      clearTimeout(typingTimeout);
-      socket.current.emit("stopTyping", data._id); 
+    const messageType = "text";
+      if (msg.length > 0) {
+        handleSendMsg(msg, messageType);
+        setMsg("");
+        clearTimeout(typingTimeout);
+        socket.current.emit("stopTyping", data._id); 
     }
   };
+
+
+  const handlePictureUpload = async (event) => {
+    // Handle picture upload logic here
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    }
+
+    const imageFile = event.target.files[0];
+    const compressedFile = await imageCompression(imageFile, options);
+    
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+        const base64Image = reader.result.split(",")[1];
+        setImg(base64Image);
+
+        
+        }
+
+    if (compressedFile) {
+        reader.readAsDataURL(compressedFile);
+    }
+};
 
   const handleTyping = () => {
     if (!isTyping) {
@@ -41,19 +72,49 @@ export default function ChatInput({ handleSendMsg, socket, data, Group}) {
       }
     }, 1000);
   };
+
+  useEffect(() => {
+    const messageType = "picture"; // Store message type in a local variable
+    if (img) {
+      handleSendMsg(img, messageType);
+      setImg("");
+    }
+  }, [img]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+        if (divRef.current && !divRef.current.contains(event.target)) {
+          setShowEmojiPicker(false);
+        }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+}, [setShowEmojiPicker]);
+
+
   return (
-    <Container>
+    <Container ref={divRef}>
       <div className="button-container">
         <div className="emoji">
-          <BsEmojiSmile onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
+        <img src={Emoji} alt={"emoji"} height={'50px'} width={'auto'} style={showEmojiPicker ? { color: "#03045F", transform: "scale(1)" } : {}} onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
           {showEmojiPicker && (
             <div className={showEmojiPicker ? "emoji-picker-react show" : "emoji-picker-react"}>
               <EmojiPicker onEmojiClick={(emojiObject)=> {
                 setMsg(msg + emojiObject.emoji);
                 setShowEmojiPicker(false);
-              }} />
+                handleTyping();
+                }} />
             </div>
           )}
+        </div>
+        <div className="photo">
+                <label htmlFor="image-upload" className="image-upload">
+                <FaRegImage />
+                </label>
+                <input id="image-upload" type="file" accept="image/*" onChange={handlePictureUpload} style={{ display: "none" }} />
         </div>
       </div>
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
@@ -75,12 +136,11 @@ export default function ChatInput({ handleSendMsg, socket, data, Group}) {
 }
 
 const Container = styled.div`
-  display: grid;
+  display: flex;
   align-items: center;
-  grid-template-columns: 5% 95%;
-  background-color: hsla(0, 0%, 10%, 0);
-    backdrop-filter: blur(12px);
-    border: 1px solid hsla(0, 0%, 100%);
+  background-color: white;
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(39, 94, 254, 0.2);
   padding: 0 2rem;
 
   @media screen and (min-width: 720px) and (max-width: 1080px) {
@@ -129,15 +189,36 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     color: white;
-    gap: 1rem;
+    gap: 0.5rem;
+
+    .photo {
+      padding-right: 1rem;
+      svg {
+        font-size: 36px;
+        color: #383838;
+        transition: all 0.5s ease;
+        transform: scale(0.9);
+      }
+    }
+    .photo:hover {
+      svg {
+        transform: scale(1);
+      }
+    }
 
     .emoji {
       position: relative;
 
-      svg {
+      img {
         font-size: 1.8rem;
-        color: #03045F;
+        color: #275EFE;
         cursor: pointer;
+        transition: all 0.5s ease;
+        transform: scale(0.9);
+      }
+      img:hover {
+        color: #03045F;
+        transform: scale(1);
       }
 
       .emoji-picker-react {
@@ -182,7 +263,7 @@ const Container = styled.div`
     align-items: center;
     gap: 2rem;
     background-color: #ffffff34;
-    border : 1px solid lightgrey;
+    border: 1px solid lightgrey;
 
     input {
       width: 90%;
@@ -210,6 +291,7 @@ const Container = styled.div`
       align-items: center;
       background-color: #275EFE;
       border: none;
+      cursor: pointer;
 
       @media screen and (min-width: 720px) and (max-width: 1080px) {
         padding: 0.3rem 1rem;
@@ -222,6 +304,11 @@ const Container = styled.div`
       svg {
         font-size: 2rem;
         color: white;
+        transition: all 0.5s ease;
+      }
+
+      svg:hover {
+        transform: scale(1.05);
       }
     }
   }

@@ -12,6 +12,7 @@ const helmet = require("helmet");
 const expectCt = require('expect-ct');
 
 
+app.use(express.static("../../client/build"));
 
 app.use(cors({origin : '*'}));
 app.use(express.json({limit: '50mb'}));
@@ -46,11 +47,10 @@ app.use(
   })
 );
 
-app.use(express.static("build"));
 
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/build", "index.html"));
 });
 
 
@@ -81,21 +81,23 @@ const io = socket(server, {
 global.onlineUsers = new Map();
 io.on("connection", (socket) => {
   global.chatSocket = socket;
+  console.log("Socket On");
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
     socket.emit("user-added", userId);
   });
 
   socket.on("send-msg", (data) => {
+    console.log("1");
     const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
+      console.log("3");
       socket.to(sendUserSocket).emit("msg-recieve", (data));
     }
   });
 
   socket.on("send-msg-grp", (data) => {
     const members = data.members;
-    console.log(members);
     if (Array.isArray(members)) {
       members.forEach((member) => {
         const sendUserSocket = onlineUsers.get(member);

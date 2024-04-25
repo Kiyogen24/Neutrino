@@ -7,7 +7,7 @@ import { RiPencilLine } from "react-icons/ri";
 import { SiApacheairflow } from "react-icons/si";
 import { GiAbstract050 } from "react-icons/gi";
 import "react-pro-sidebar/dist/css/styles.css";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { BiPowerOff } from "react-icons/bi";
 import styled from "styled-components";
 import axios from "axios";
@@ -16,52 +16,65 @@ import SetAvatar from "../SetAvatar";
 import Logo from "../../assets/neutrino.png";
 import ProfilePicture from "../../assets/pp_user.png";
 
-const Sidenav = () => {
+const Sidenav = (importPP) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [userData, setUserData] = useState(undefined);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [profilePicture, setProfilePicture] = useState(undefined);
   const [showPictureModal, setShowPictureModal] = useState(false);
 
-
-
   useEffect(() => {
     const verif = async () => {
-        let user = localStorage.getItem("app-user");
-        if (!user) {
-            user = sessionStorage.getItem("app-user");
-        }
-        setUserData(JSON.parse(user));
+      let user = localStorage.getItem("app-user");
+      if (!user) {
+        user = sessionStorage.getItem("app-user");
+      }
+      setUserData(JSON.parse(user));
     };
     verif();
   }, []);
 
-
-
+  useEffect(() => {
+    const changeOn = async () => {
+      if (userData && userData.avatarImage !== "") {
+        try {
+          handleChangePP(userData.avatarImage);
+        } catch(err) {
+          console.log(err); 
+        }
+      }
+    };
+    changeOn();
+  }, [userData]);
 
   const handleClick = async () => {
     try {
-    const data = await axios.get(`${logoutRoute}/${userData._id}`);
-    if (data.status === 200) {
-      localStorage.clear();
-      sessionStorage.clear();
-      navigate("/login");
+      const data = await axios.get(`${logoutRoute}/${userData._id}`);
+      if (data.status === 200) {
+        localStorage.clear();
+        sessionStorage.clear();
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error(error);
-  }
   };
 
   const handleAvatarClick = () => {
     if (showPictureModal) {
       setShowPictureModal(false);
-    } 
-    else {
+    } else {
       setShowPictureModal(true);
     }
   };
 
+  const handleChangePP = (image) => {
+    setProfilePicture(image);
+  };
+
   const handlePictureModalClose = () => {
-      setShowPictureModal(false);
+    setShowPictureModal(false);
   };
 
   const handlePictureUpload = (event) => {
@@ -71,26 +84,47 @@ const Sidenav = () => {
   return (
     <>
       <div id="header">
-        <ProSidebar collapsed={true}>
+      <ProSidebar collapsed={isSidebarCollapsed} >
           <SidebarHeader>
             <div className="logotext">
-              <img src={Logo} alt="" style={{ width: '60px', height: 'auto' }} />
+              <img src={Logo} alt="" style={{ width: '85px', height: 'auto', objectFit: 'cover' }} />
             </div>
           </SidebarHeader>
           <SidebarContent>
-            <Menu iconShape="round" style={{ color: "#101010" }}>
-              <MenuItem  icon={<FaComment style={{ fontSize: '18px' }} />}>
-                <Link to="/">Chat</Link>
-              </MenuItem>
-              <MenuItem icon={<FaUsers style={{ fontSize: '18px' }} />}>
-                <Link to="/groups">Canal</Link>
-              </MenuItem>
+            <Menu iconShape="round" style={{ color: "#101010"}}>
+              <Link style={{ height:'24px'}} to="/">
+                <MenuItem
+                  icon={<div><div></div><a className="icon-meme"><FaComment style={{ fontSize: '30px' }} /></a></div>}
+                  className={location.pathname === "/" ? "IconSelected" : ""}
+                >
+  
+                </MenuItem>
+              </Link>
+              <Link style={{ height:'24px'}} to="/groups">
+                <MenuItem
+                  icon={<div><div ></div><a className="icon-meme"><FaUsers style={{ fontSize: '30px' }} /> </a></div>}
+                  className={location.pathname === "/groups" ? "IconSelected" : ""}
+                >
+                  
+                </MenuItem>
+              </Link>
             </Menu>
           </SidebarContent>
           <SidebarFooter>
-            <Menu iconShape="round" style={{  color: "white" }}>
+            <Menu iconShape="circle" style={{ color: "white" }}>
               <MenuItem
-                icon={profilePicture ? <img src={`data:image/png;base64, ${profilePicture}`} style={{ width: '70px', height: 'auto', fontSize: '18px' }} /> : <img src={ProfilePicture} style={{ width: '70px', height: 'auto', fontSize: '18px' }} />}
+                icon={
+                    <img
+                        src={`data:image/*;base64, ${profilePicture}`}
+                        style={{
+                          borderRadius: "3rem",
+                          width: "3rem",
+                          height: "3rem",
+                          fontSize: "24px",
+                          objectFit: "cover",
+                        }}
+                      />
+                }
                 onClick={handleAvatarClick}
               >
                 Avatar
@@ -99,11 +133,9 @@ const Sidenav = () => {
           </SidebarFooter>
         </ProSidebar>
             {showPictureModal && (
-              <SetAvatar onClose={handlePictureModalClose} />
+              <SetAvatar onClose={handlePictureModalClose} ChangePP={handleChangePP}/>
             )}
       </div>
-
-      
     </>
   );
 };

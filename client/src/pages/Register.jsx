@@ -11,6 +11,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import Logo from "../assets/neutrino.png"
 import { IoGlobeOutline } from "react-icons/io5";
 import Spinner from "../assets/Spinner.svg"
+import ProfilePicture from "../assets/pp_user.png";
 import "./css/Register.css"
 //import Logo from "../assets/logo.png";
 
@@ -37,6 +38,7 @@ const Register = () => {
 
 
   const navigate = useNavigate()
+
 
   useEffect(() => {
       document.title = "Neutrino — Inscription"
@@ -128,8 +130,30 @@ const Register = () => {
 
 
           const handleRegister = () => {
+            
             const init = async () => {
                 setLoading(true)
+                const convertImageToBase64 = async (imageUrl) => {
+                    try {
+                        const response = await fetch(imageUrl);
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        return new Promise((resolve, reject) => {
+                            reader.onload = () => {
+                                const base64String = reader.result;
+                                const imageString = base64String.substring(base64String.indexOf(',') + 1);
+                                resolve(imageString);
+                            };
+                            reader.onerror = (error) => {
+                                reject(error);
+                            };
+                        });
+                    } catch (error) {
+                        console.error(error);
+                        throw error;
+                    }
+                };
               
                 // Générer une paire de clés
                 const keyPair = await generateKeys();
@@ -137,6 +161,8 @@ const Register = () => {
                 
                 // Stocker la clé privée dans IndexedDB
                 await storePrivateKeyInIndexedDB(username, keyPair.privateKey);
+
+                const profilePictureBase64 = await convertImageToBase64(ProfilePicture);
                 
                 // Exporter la clé publique en format JWK
                 const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey); 
@@ -145,6 +171,7 @@ const Register = () => {
                     surname: surname || username,
                     password,
                     publicKey: publicKeyJwk,
+                    avatarImage: profilePictureBase64,
                 });
 
                 const data = response.data

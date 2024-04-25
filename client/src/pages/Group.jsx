@@ -73,7 +73,9 @@ export default function GroupChat({ menuCollapse }) {
   return (
     redirect === false ? (
       <div className="all">
-        <Sidebar />
+        <div>
+          <Sidebar />
+        </div>
         <div style={{display: "flex"}} className={menuCollapse === true ? "box collapsed" : "box"}>
           <div className="container">
             <GroupContacts contacts={contacts} groups={groups} changeGroup={handleGroupChange} />

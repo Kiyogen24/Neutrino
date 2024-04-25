@@ -26,7 +26,7 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family : -apple-system, BlinkMacSystemFont,'Open sans', 'Segoe UI', "Galey 1";
+  font-family : -apple-system, BlinkMacSystemFont,'Open sans', 'Segoe UI Emoji', "Galey 1";
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
@@ -38,6 +38,7 @@ html {
 body{
 	margin: 0 auto;
 }
+
 
 
 

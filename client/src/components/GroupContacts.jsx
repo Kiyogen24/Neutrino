@@ -99,10 +99,11 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
     <>
       <Container>
         <div className="brand">
-          <button onClick={handleChooseMembers}><FaRegSquarePlus/></button>
+         
         </div>
         <div className="separator"></div>
         <div className="groups">
+        <button onClick={handleChooseMembers}><FaRegSquarePlus/></button>
           {Array.isArray(groups) && groups.map((group, index) => {
             return (
               <div
@@ -113,7 +114,8 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
                 onClick={() => changeCurrentGroupChat(index, group)}
               >
                 <div className="username">
-                  <h3>{group.name}</h3>
+                  <h4>{group.name}</h4>
+                  <br/>
                 </div>
               </div>
             );
@@ -158,9 +160,9 @@ export default function GroupContacts({ contacts, groups, changeGroup }) {
 const Container = styled.div`
 display: grid;
 rezise: horizontal;
-grid-template-rows: 9% 1% 100% 0%;
+grid-template-rows: 0% 0% 100% 0%;
 overflow: hidden;
-background-color: hsla(0, 0%, 10%, 0);
+background-color: white;
   backdrop-filter: blur(12px);
   border: 1px solid lightgrey;
 .brand {
@@ -200,7 +202,7 @@ background-color: hsla(0, 0%, 10%, 0);
     backdrop-filter: blur(8px);
     overflow-y: none;
   }
-  .brand button {
+  .groups button {
     background: none;
     border: none;
     color: #03045F;
@@ -363,6 +365,9 @@ background-color: hsla(0, 0%, 10%, 0);
     box-sizing: inherit;
   }
   .groups {
+    position: fixed;
+    width : 70%;
+    left: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -388,7 +393,7 @@ background-color: hsla(0, 0%, 10%, 0);
       .username {
         flex-direction: column;
         align-items: center;
-        h3 {
+        h4 {
           color: #03045F;
           margin-bottom: 0;
         }
@@ -400,11 +405,11 @@ background-color: hsla(0, 0%, 10%, 0);
     .selected {
       transition: 0.5s ease-in-out;
       background-color: hsla(0, 0%, 10%, 0.1);
-      border: 1px solid hsla(0, 0%, 100%);
+      border: 1px solid #275EFE;
       display: flex;
       align-items: center;
       .username {
-        h3 {
+        h4 {
           color: #03045F;
         }
       }
@@ -435,6 +440,15 @@ background-color: hsla(0, 0%, 10%, 0);
           font-size: 1rem;
         }
       }
+    }
+  }
+  @media screen and (max-width: 720px) {
+    .groups {
+      left: 0;
+    }}
+  @media screen and (max-width: 480px) {
+    .groups {
+      left: 0;
     }
   }
 `;

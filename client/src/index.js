@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Sidebar from "./components/Navbar/Navbar.tsx";
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <App />

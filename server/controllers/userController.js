@@ -32,7 +32,7 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.register = async (req, res, next) => {
   try {
-    const { username, surname, password, publicKey } = req.body;
+    const { username, surname, password, publicKey, avatarImage } = req.body;
     const usernameCheck = await User.findOne({ username });
     const keyCheck = await User.findOne({ publicKey });
     if (usernameCheck)
@@ -46,6 +46,7 @@ module.exports.register = async (req, res, next) => {
       surname,
       password: hashedPassword,
       publicKey,
+      avatarImage,
     });
     delete user.password;
     return res.json({ status: true, user });
@@ -60,6 +61,7 @@ module.exports.getAllUsers = async (req, res, next) => {
       "username",
       "surname",
       "_id",
+      "avatarImage",
     ]);
     return res.json(users);
   } catch (ex) {
@@ -75,13 +77,11 @@ module.exports.setAvatar = async (req, res, next) => {
     const userData = await User.findByIdAndUpdate(
       userId,
       {
-        isAvatarImageSet: true,
         avatarImage,
       },
       { new: true }
     );
     return res.json({
-      isSet: userData.isAvatarImageSet,
       image: userData.avatarImage,
     });
   } catch (ex) {
@@ -103,7 +103,6 @@ module.exports.createGroup = async (req, res, next) => {
   try {
     const { name, admin, members } = req.body;
     members.push(admin);
-    console.log(members);
     const group = await Group.create({ name: name, admin: admin, members });
     return res.json({ status: true, group });
   } catch (ex) {
@@ -118,6 +117,38 @@ module.exports.getGroupMembers = async (req, res, next) => {
     if (!group) return res.json({ msg: "Groupe non trouvé", status: false });
     const members = group.members.filter(member => member !== userId);
     return res.json({ status: true, members });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getUsersAvatars = async (req, res, next) => {
+  try {
+    const memberIds = req.body.memberIds;
+    const avatars = {};
+    for (const memberId of memberIds) {
+      const user = await User.findById(memberId);
+      if (user) {
+        avatars[memberId] = user.avatarImage;
+      }
+    }
+    return res.json({ avatars });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getMembersAvatars = async (req, res, next) => {
+  try {
+    const memberIds = req.body.memberIds;
+    const avatars = {};
+    for (const memberId of memberIds) {
+      const user = await User.findById(memberId);
+      if (user) {
+        avatars[memberId] = user.avatarImage;
+      }
+    }
+    return res.json({ avatars });
   } catch (ex) {
     next(ex);
   }
