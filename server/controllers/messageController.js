@@ -24,6 +24,39 @@ module.exports.getMessages = async (req, res, next) => {
   }
 };
 
+module.exports.getLastMessage = async (req, res, next) => {
+  try {
+    const { from, to } = req.body;
+
+    const message = await Messages.findOne({
+      users: {
+        $all: [from, to],
+      },
+    }).sort({ createdAt: -1 });
+
+    if (!message) {
+      return res.status(404).json({ msg: "No messages found" });
+    }
+
+    let messageType = message.type;
+    if (messageType === 'picture') {
+      messageType = 'Image';
+      message.message.text = 'Image';
+    }
+
+    const projectedMessage = {
+      fromSelf: message.sender.toString() === from,
+      message: messageType,
+      sentAt: message.createdAt,
+      type: message.type,
+    };
+
+    res.json(projectedMessage);
+  } catch (ex) {
+    next(ex);
+  }
+};
+
 module.exports.addMessage = async (req, res, next) => {
   try {
     const { from, to, message, type } = req.body;
