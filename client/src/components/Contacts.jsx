@@ -1,4 +1,6 @@
 import React, { useState, useEffect, Suspense } from "react";
+import axios from 'axios';
+import { lastMessageRoute } from "../utils/APIRoutes";
 import styled from "styled-components";
 import Logo from "../assets/neutrino.png"
 
@@ -7,6 +9,8 @@ export default function Contacts({ contacts, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const [data, setData] = useState(undefined);
+  const [lastMessages, setLastMessages] = useState({});
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -27,7 +31,21 @@ export default function Contacts({ contacts, changeChat }) {
     }
   }, [data]);
 
-  const changeCurrentChat = (index, contact) => {
+  useEffect(() => {
+    if (data) {
+      setCurrentUserName(data.surname);
+      contacts.forEach(async (contact) => {
+        try {
+          const response = await axios.post(lastMessageRoute, { from: contact._id, to: data._id });
+          setLastMessages(prevState => ({ ...prevState, [contact._id]: response.data.message }));
+        } catch (error) {
+          console.error('Failed to fetch last message:', error);
+        }
+      });
+    }
+  }, [data, contacts]);
+
+  const changeCurrentChat = async (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
   };
@@ -50,8 +68,9 @@ export default function Contacts({ contacts, changeChat }) {
                 onClick={() => changeCurrentChat(index, contact)}
               >
                 <div className="username">
-                  <h4>{contact.surname}</h4>
-                  <h6>{'@'+contact.username}</h6>
+                  <h4>{contact.surname} <h6>({'@'+contact.username})</h6></h4>
+                  
+                  <h6>{lastMessages[contact._id]}</h6>
                 </div>
               </div>
             );

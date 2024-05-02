@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import ChatInput from "./ChatInput";
+import { MessageContext } from '../Context/MessageContext';
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -10,6 +11,7 @@ import "./css/ChatContainer.css"
 
 
 export default function ChatContainer({ currentChat, socket, privateKey }) {
+  const { msgs, setMsgs } = useContext(MessageContext);
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);

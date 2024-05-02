@@ -1,4 +1,4 @@
-export const host = "http://localhost:5000";
+export const host = "http://localhost:50190";
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;
 export const logoutRoute = `${host}/api/auth/logout`;
@@ -10,6 +10,7 @@ export const removeMemberRoute = `${host}/api/auth/removememberfromgroup`;
 export const getGroupMembers = `${host}/api/auth/getgrpmbrs`;
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getmsg`;
+export const lastMessageRoute = `${host}/api/messages/lastmsg`;
 export const sendMessageToGroup = `${host}/api/grpmessages/addgrpmsg`;
 export const getGroupMessages = `${host}/api/grpmessages/getgrpmsg`;
 export const setAvatarRoute = `${host}/api/auth/setavatar`;

@@ -167,7 +167,7 @@ const Login = () => {
     redirect === false ? (
       <div className="formulaire">
         <div className="navigation">
-          <img src={Logo} alt="" style={{ width: '100px', height: 'auto' }} />
+          <img onClick={() => navigate("/")} src={Logo} alt="" style={{ width: '100px', height: 'auto', cursor: 'pointer' }} />
           <div>
             <IoGlobeOutline />
             <span>Français</span>
