@@ -10,7 +10,8 @@ require("dotenv").config();
 const path = require('path');
 const helmet = require("helmet");
 const expectCt = require('expect-ct');
-
+// modification mise en place proxying 01/05/2024
+const http = require('http');
 
 
 app.use(cors({origin : '*'}));
@@ -150,4 +151,9 @@ io.on("connection", (socket) => {
     });
   });
 
+<<<<<<< HEAD
 
+=======
+// modification mise en place proxying 01/05/2024
+//server.listen(50190, '127.0.0.1');
+>>>>>>> 330dde26370df97ce89814304e5c1c039f871a28
