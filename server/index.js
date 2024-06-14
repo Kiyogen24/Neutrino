@@ -10,10 +10,8 @@ require("dotenv").config();
 const path = require('path');
 const helmet = require("helmet");
 const expectCt = require('expect-ct');
-const http = require('http');
 
 
-app.use(express.static("../../client/build"));
 
 app.use(cors({origin : '*'}));
 app.use(express.json({limit: '50mb'}));
@@ -49,10 +47,6 @@ app.use(
 );
 
 
-
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../client/build", "index.html"));
-});
 
 
 mongoose

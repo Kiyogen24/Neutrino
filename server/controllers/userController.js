@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Group = require("../models/groupModel");
 const bcrypt = require("bcrypt");
+const salt =  "$2b$10$EgBTd2Q0VEDZDwUh2xXDqerM/13iyfFbT2jkKdfmNLJHS.7QP8hhO";
 const mongoose = require("mongoose");
 
 
@@ -32,20 +33,21 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.register = async (req, res, next) => {
   try {
-    const { username, surname, password, publicKey, avatarImage } = req.body;
+    const { username, surname, password, publicKey, prK, iv, avatarImage } = req.body;
     const usernameCheck = await User.findOne({ username });
     const keyCheck = await User.findOne({ publicKey });
     if (usernameCheck)
       return res.json({ msg: "Ce nom d'utilisateur est déjà utilisé", status: false });
     if (keyCheck)
       return res.json({ msg: "Veuillez réessayer", status: false });
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
       surname,
       password: hashedPassword,
       publicKey,
+      prK,
+      iv,
       avatarImage,
     });
     delete user.password;
@@ -55,6 +57,7 @@ module.exports.register = async (req, res, next) => {
   }
 };
 
+
 module.exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({ _id: { $ne: req.params.id } }).select([
@@ -62,6 +65,7 @@ module.exports.getAllUsers = async (req, res, next) => {
       "surname",
       "_id",
       "avatarImage",
+      "publicKey",
     ]);
     return res.json(users);
   } catch (ex) {

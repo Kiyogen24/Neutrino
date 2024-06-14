@@ -15,6 +15,7 @@ const groupMessageSchema = new mongoose.Schema({
   message: {
     text: { type: String, required: true },
   },
+  type: { type: String, required: true }, 
 },
   {
   timestamps: true

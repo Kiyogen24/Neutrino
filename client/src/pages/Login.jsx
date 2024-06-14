@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { loginRoute, host } from "../utils/APIRoutes";
+import crypto from 'crypto-js';
+import { pbkdf2 } from 'crypto-js/pbkdf2';
+import { loginRoute, encryptRoute, host } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
 import { BsExclamationCircleFill } from "react-icons/bs"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
@@ -14,6 +16,7 @@ import { IoGlobeOutline } from "react-icons/io5";
 import Spinner from "../assets/Spinner.svg"
 import "./css/Login.css"
 import { io } from "socket.io-client";
+import { generateKeyPair, encryptPrivateKey, decryptPrivateKey } from '../crypto';
 
 
 const Login = () => {
@@ -47,6 +50,8 @@ const Login = () => {
   const [passwordHidden, setPasswordHidden] = useState(true)
   const [redirect, setRedirect] = useState(true)
   const [showRecaptcha, setShowRecaptcha] = useState(false) // Add state for reCAPTCHA
+  const [publicKey, setPublicKey] = useState(null);
+  const [privateKey, setPrivateKey] = useState(null);
   
   const navigate = useNavigate()
 
@@ -57,18 +62,23 @@ const Login = () => {
 
 
   useEffect(() => {
-    document.title = "Neutrino — Connexion"
+    
+    
+    document.title = "Neutrino — Connexion";
     if (localStorage.getItem("app-user")) {
+
       navigate("/");
       }
     else if (sessionStorage.getItem("app-user")){
+
       navigate("/");
     }
     else {
       setRedirect(false);
     }
-    
+  
   }, [])
+  
 
   useEffect(() => {
     if (username.length >= 4 && username.length <= 20) {
@@ -81,6 +91,10 @@ const Login = () => {
       return {...prev, password: undefined}
     })
   }, [username, password])
+
+
+
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -127,6 +141,12 @@ const Login = () => {
       toast.info(`Il vous reste ${4 - attempts} tentatives`, toastOptions);
       }
     if (data.status === true) {
+
+      const encryptedPrivateKey = await data.user.prK;
+      const iv = await data.user.iv;
+
+      const privateKey = await decryptPrivateKey(encryptedPrivateKey, password, iv);
+      setPrivateKey(privateKey);
       if (checkbox) {
       sessionStorage.setItem('loginAttempts', 0);
       localStorage.setItem('loginPermAttempts', 0);
@@ -136,6 +156,11 @@ const Login = () => {
         "app-user",
         JSON.stringify(data.user)
       );
+      localStorage.setItem(
+        "privateKey",
+        JSON.stringify(privateKey)
+      );
+      
       console.log(localStorage.getItem("app-user"));
     }
       else {
@@ -145,7 +170,12 @@ const Login = () => {
         setPermAttempts(0);
         try { sessionStorage.setItem(
         "app-user",
-        JSON.stringify(data.user)); }
+        JSON.stringify(data.user));
+        sessionStorage.setItem(
+          "privateKey",
+          JSON.stringify(privateKey)
+        );
+        }
         catch(error) {
           console.log('Session Storage est désactivé.');
         }
@@ -220,7 +250,7 @@ const Login = () => {
                 <div className={checkbox === true ? "checkbox active" : "checkbox"}>
                   {checkbox === true ? <BsCheck2 className="uprootal-lug" /> : undefined}
                 </div>
-                <span>Me garder connecter</span>
+                <span>Me garder connecté</span>
                 <AiOutlineInfoCircle />
               </div>
               <div className="prankish-sod">

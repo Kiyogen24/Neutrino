@@ -7,10 +7,9 @@ import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import { CSSTransition } from 'react-transition-group';
 import "./css/ChatContainer.css"
+import { encryptMessage, decryptMessage, decryptPrivateKey } from '../crypto';
 
-
-
-export default function ChatContainer({ currentChat, socket, privateKey }) {
+export default function ChatContainer({ currentChat, socket }) {
   const { msgs, setMsgs } = useContext(MessageContext);
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
@@ -18,10 +17,16 @@ export default function ChatContainer({ currentChat, socket, privateKey }) {
   const [data, setData] = useState(undefined);
   const [isTyping, setIsTyping] = useState(false);
   const [showDate, setShowDate] = useState(false);
-  //const [isMessageClicked, setIsMessageClicked] = useState(false);
   const [isMessageSent, setIsMessageSent] = useState(false);
   const [hasUserScrolledUp, setHasUserScrolledUp] = useState(false);
   const [profilePicture, setProfilePicture] = useState(undefined);
+  const [publicKey, setPublicKey] = useState(null);
+  const [privateKey, setPrivateKey] = useState(null);
+  const [encryptedPrivateKey, setEncryptedPrivateKey] = useState(null);
+  const [iv, setIv] = useState('');
+  const [recipientPublicKey, setRecipientPublicKey] = useState(null);
+  const [decryptedMessage, setDecryptedMessage] = useState('');
+
   const user = sessionStorage.getItem('app-user');
   
   const currentChatRef = useRef(currentChat);
@@ -38,77 +43,87 @@ export default function ChatContainer({ currentChat, socket, privateKey }) {
     currentChatRef.current = currentChat;
   }, [currentChat]);
 
-  
-  async function decryptMessages(privateKey, encryptedMessages) {
-    const decryptedMessages = [];
+  const handleEncryptMessage = async (msg) => {
+    if (!privateKey || !recipientPublicKey || !publicKey) return;
+
+    const encryptedMessage1 = await encryptMessage(msg, recipientPublicKey);
+    const encryptedMessage2 = await encryptMessage(msg, publicKey);
+
+    return {encryptedMessage1, encryptedMessage2};
+  };
+
+  const handleDecryptMessage = async (msg) => {
+
+    if (!privateKey) return;
     
-    for (let encryptedMessage of encryptedMessages) {
-      try {
-        // Vérifier que le message est une chaîne en base64 valide
-        if (!/^[a-zA-Z0-9+/]*={0,2}$/.test(encryptedMessage)) {
-          throw new Error('encryptedMessage is not a valid base64 string');
-        }
-  
-        // Convertir le message chiffré de base64 en ArrayBuffer
-        const encryptedMessageBuffer = Uint8Array.from(
-          atob(encryptedMessage),
-          (c) => c.charCodeAt(0)
-        );
-        
-         // Déchiffrer le message
-      let decryptedMessageBuffer;
-      try {
-        decryptedMessageBuffer = await window.crypto.subtle.decrypt(
-          {
-            name: "RSA-OAEP",
-          },
-          privateKey,
-          encryptedMessageBuffer
-        );
-      } catch (error) {
-        console.error('Failed to decrypt message with window.crypto.subtle.decrypt:', error);
-        continue; // Skip this iteration and move to the next message
-      }
-  
-        // Convertir le message déchiffré en string
-        const decryptedMessage = new TextDecoder().decode(new Uint8Array(decryptedMessageBuffer));
-        
-        decryptedMessages.push(decryptedMessage);
-      } catch (error) {
-        console.error('Failed to decrypt message:', encryptedMessage, error);
-      }
+    const decrypted = await decryptMessage(msg, privateKey);
+    if (decrypted) {
+    setDecryptedMessage(decrypted);
     }
-  
-    return decryptedMessages;
-  }
-
-
+    return decrypted;
+  };
 
   useEffect(() => {
     const getMessage = async () => {
       let userData;
+      let prk;
       if (!user) {
         userData = await JSON.parse(localStorage.getItem("app-user"));
+        prk = await JSON.parse(localStorage.getItem("privateKey"));
         setData(userData);
+        setPrivateKey(prk);
+        setIv(userData.iv);
       } else {
         userData = await JSON.parse(user);
+        prk = await JSON.parse(sessionStorage.getItem("privateKey"));
         setData(userData);
+        setPrivateKey(prk);
+        setIv(userData.iv);
       }
-      
+      setPublicKey(userData.publicKey);
+
       if (userData && currentChat) {
         const response = await axios.post(recieveMessageRoute, {
           from: userData._id,
           to: currentChat._id,
         });
-        /*
-        let messagesData = Object.values(response.data).map(item => item.message);
-        console.log(messagesData);
-        let decryptedMessages = await decryptMessages(privateKey, messagesData);
-        console.log(decryptedMessages);
-        setMessages(decryptedMessages);
-        */
-        setMessages(response.data.map(message => ({ ...message, showDate: false })));
         
+        try {
+          const decryptedMessages = await Promise.all(
+            response.data.map(async msg => {
+              if (msg.type === "picture") {
+                return {
+                  fromSelf: msg.fromSelf,
+                  message: msg.message,
+                  sentAt: msg.sentAt,
+                  type: msg.type,
+                };
+              }
+              else if (!msg.fromSelf){
+                const decryptedMessage = await decryptMessage(msg.message, prk);
+                return {
+                  fromSelf: msg.fromSelf,
+                  message: decryptedMessage,
+                  sentAt: msg.sentAt,
+                  type: msg.type,
+                };
+                } else {
+                  const decryptedMessage = await decryptMessage(msg.cpy, prk);
+                  return {
+                    fromSelf: msg.fromSelf,
+                    message: decryptedMessage,
+                    sentAt: msg.sentAt,
+                    type: msg.type,
+                  };
+                  }
+                  
+            })
+          );
+          console.log("mess : ", decryptedMessages);
+          setMessages(decryptedMessages);
+        } catch (error) {
+          console.error("Error decrypting messages:", error);
+        }
       }
     }
     getMessage();
@@ -117,13 +132,13 @@ export default function ChatContainer({ currentChat, socket, privateKey }) {
   useEffect(() => {
     const changeOn = async () => {
       if (currentChatRef.current  && currentChatRef.current.avatarImage !== "") {
-        
         try {
           setProfilePicture(currentChatRef.current.avatarImage);
         } catch(err) {
           console.log(err); 
         }
       }
+      setRecipientPublicKey(currentChatRef.current.publicKey)
     };
     changeOn();
   }, [currentChatRef.current]);
@@ -131,9 +146,7 @@ export default function ChatContainer({ currentChat, socket, privateKey }) {
   useEffect(() => {
     const getCurrentChat = async () => {
       if (currentChat) {
-        
         if (!user) {
-          
           await JSON.parse(localStorage.getItem("app-user"))._id;
         } else {
           await JSON.parse(user)._id
@@ -143,86 +156,71 @@ export default function ChatContainer({ currentChat, socket, privateKey }) {
     getCurrentChat();
   }, [currentChat]);
 
+  const toggleShowDate = (index) => {
+    setMessages(messages.map((message, i) => i === index ? { ...message, showDate: !message.showDate } : message));
+  }
 
-/*
-  // Réinitialisez l'état isMessageClicked à false après un certain délai
-  useEffect(() => {
-    if (isMessageClicked) {
-      setTimeout(() => {
-        setIsMessageClicked(false);
-      }, 1000);
+  const handleSendMsg = async (msg, type) => {
+    let userData;
+    let prk;
+    if (!user) {
+      userData = await JSON.parse(localStorage.getItem("app-user"));
+
     }
-  }, [isMessageClicked]);
-  */
+    else {
+      userData = await JSON.parse(user);
+      
+    }
 
-
-    
-  async function encryptMessage(publicKeyJwk, message) {
-    // Importer la clé publique
-    const publicKey = await window.crypto.subtle.importKey(
-      "jwk",
-      publicKeyJwk,
-      {
-        name: "RSA-OAEP",
-        hash: "SHA-256",
-      },
-      true,
-      ["encrypt"]
-    );
-    
-    // Chiffrer le message
-    const encryptedMessage = await window.crypto.subtle.encrypt(
-      {
-        name: "RSA-OAEP",
-      },
-      publicKey,
-      new TextEncoder().encode(message)
-    );
+    if (userData && currentChat) {
+      let timestamp = new Date().getTime();
+      if (type==='picture'){
+        socket.current.emit("send-msg", {
+          to: currentChat._id,
+          from: userData._id,
+          fromUser: userData.surname,
+          msg: msg,
+          type: type,
+        }, userData);
+        setIsTyping(false);
   
-    // Convertir le message chiffré en base64 pour le rendre plus facile à manipuler
-    return btoa(String.fromCharCode(...new Uint8Array(encryptedMessage)));
-  }
+        await axios.post(sendMessageRoute, {
+          from: userData._id,
+          to: currentChat._id,
+          message: msg,
+          cpy : msg,
+          type: type,
+        });
+      } else {
 
+      const {encryptedMessage1, encryptedMessage2} = await handleEncryptMessage(msg);
 
-const toggleShowDate = (index) => {
-  setMessages(messages.map((message, i) => i === index ? { ...message, showDate: !message.showDate } : message));
-  //setIsMessageClicked(true);
-}
+      
+      if (!encryptedMessage1) return;
+      
+      socket.current.emit("send-msg", {
+        to: currentChat._id,
+        from: userData._id,
+        fromUser: userData.surname,
+        msg: encryptedMessage1,
+        type: type,
+      }, userData);
+      setIsTyping(false);
 
-const handleSendMsg = async (msg, type) => {
-  let userData;
-  if (!user) {
-    userData = await JSON.parse(localStorage.getItem("app-user"));
-  }
-  else {
-    userData = await JSON.parse(user);
-  }
-
-  if (userData && currentChat) {
-    let timestamp = new Date().getTime();
-    //msg = await encryptMessage(data.publicKey, msg);
-    
-    socket.current.emit("send-msg", {
-      to: currentChat._id,
-      from: userData._id,
-      fromUser: userData.surname,
-      msg,
-      type: type,
-    }, userData);
-    setIsTyping(false);
-    await axios.post(sendMessageRoute, {
-      from: userData._id,
-      to: currentChat._id,
-      message: msg,
-      type: type,
-    });
-    
-    const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg, type: type, sentAt: timestamp, showDate: false });
-    setMessages(msgs);
-    setIsMessageSent(true);
-  }
-};
+      await axios.post(sendMessageRoute, {
+        from: userData._id,
+        to: currentChat._id,
+        message: encryptedMessage1,
+        cpy : encryptedMessage2,
+        type: type,
+      });
+    }
+      const msgs = [...messages];
+      msgs.push({ fromSelf: true, message: msg, type: type, sentAt: timestamp, showDate: false });
+      setMessages(msgs);
+      setIsMessageSent(true);
+    }
+  };
 
   useEffect(() => {
     if (socket.current) {
@@ -238,22 +236,26 @@ const handleSendMsg = async (msg, type) => {
         }
       });
 
-      socket.current.on("msg-recieve", (data) => { 
-        console.log("2");
+      socket.current.on("msg-recieve", async (data) => { 
+        console.log("Received message");
         let timestamp = new Date().getTime();
-        
+
         if (currentChatRef.current && data.from === currentChatRef.current._id) {
-          setArrivalMessage({ fromSelf: false, message: data.msg, type: data.type, sentAt: timestamp, showDate: false });
+          if (data.type === 'picture'){
+            setArrivalMessage({ fromSelf: false, message: data.msg, type: data.type, sentAt: timestamp, showDate: false });
+          }
+          else {
+          const decryptedMsg = await handleDecryptMessage(data.msg);
+          if (decryptedMsg) {
+            setArrivalMessage({ fromSelf: false, message: decryptedMsg, type: data.type, sentAt: timestamp, showDate: false });
+          }}
         } else {
           const img = `data:image/*;base64, ${profilePicture}`;
-
-          const text = data.msg;
-          const notification = new Notification("Nouveau Message", { body: `[${data.fromUser}] : ${text}`, icon: img });
+          const notification = new Notification("Nouveau Message", { body: `[${data.fromUser}] : ${data.msg}`, icon: img });
         }
       });
     }
-  }, [socket]);
-
+  }, [socket, privateKey]);
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
@@ -261,7 +263,7 @@ const handleSendMsg = async (msg, type) => {
 
   const handleScroll = (e) => {
     const { scrollTop } = e.target;
-    if (scrollTop +75 < e.target.scrollHeight - e.target.offsetHeight) {
+    if (scrollTop + 75 < e.target.scrollHeight - e.target.offsetHeight) {
       setHasUserScrolledUp(true);
     } else {
       setHasUserScrolledUp(false);
@@ -270,34 +272,26 @@ const handleSendMsg = async (msg, type) => {
 
   useEffect(() => {
     if (isMessageSent) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth"});
-      setIsMessageSent(false); // Réinitialisez l'état isMessageSent à false après le défilement
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+      setIsMessageSent(false);
     }
   }, [isMessageSent]);
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth"});
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentChat]);
   
   useEffect(() => {
     if (!hasUserScrolledUp) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth"});
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
   
-    useEffect(() => {
-      if (isTyping && !hasUserScrolledUp) {
-        scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }, [isTyping]);
-  /*
   useEffect(() => {
-    if (!isMessageClicked) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth"});
+    if (isTyping && !hasUserScrolledUp) {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [messages]);
-  */
-  
+  }, [isTyping]);
 
   function formatTime(timestamp) {
     const date = new Date(timestamp);
@@ -307,6 +301,7 @@ const handleSendMsg = async (msg, type) => {
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
     return `${formattedHours}:${formattedMinutes}`;
   }
+
 
 
   return (

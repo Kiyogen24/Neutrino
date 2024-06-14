@@ -2,7 +2,20 @@ const mongoose = require("mongoose");
 
 const MessageSchema = mongoose.Schema(
   {
+    /*
+    iv: {
+      type: Array,
+      required: true
+    },
+    ciphertext: {
+      type: Array,
+      required: true
+    },*/
+    
     message: {
+      text: { type: String, required: true },
+    },
+    cpy: {
       text: { type: String, required: true },
     },
     users: Array,

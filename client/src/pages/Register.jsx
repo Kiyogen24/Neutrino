@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import crypto from 'crypto-js';
+import { generateKeyPair, encryptPrivateKey, decryptPrivateKey, exportKey } from '../crypto';
 import { registerRoute } from "../utils/APIRoutes";
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { useNavigate } from "react-router-dom";
@@ -35,8 +37,11 @@ const Register = () => {
   })
   const [loading, setLoading] = useState(false)
   const [passwordHidden, setPasswordHidden] = useState({ password: true, confirm: true })
+ 
+  const [publicKey, setPublicKey] = useState(null);
+  const [encryptedPrivateKey, setEncryptedPrivateKey] = useState(null);
 
-
+  
   const navigate = useNavigate()
 
 
@@ -56,78 +61,50 @@ const Register = () => {
       }
   }, [password, confirmPassword])
 
-  useEffect(() => {
-      if (username.length >= 4 && username.length <= 20) {
-          setErrors(prev => {
+useEffect(() => {
+    if (username.length >= 4 && username.length <= 20) {
+        setErrors(prev => {
             return {...prev, username: undefined}
-          })
-        } 
-  }, [username])
+        })
+    } 
+}, [username])
 
-  
-  const checkPasswords = () => {
+
+const checkPasswords = () => {
 
     if (username.length < 4 || username.length > 20) {
-      setErrors(prev => {
-         return {...prev, username: 'Le nom d\'utilisateur doit avoir entre 4 et 20 caractères'}
-     })
+        setErrors(prev => {
+            return {...prev, username: 'Le nom d\'utilisateur doit avoir entre 4 et 20 caractères'}
+        })
     }
 
     if (username.includes('@')) {
-      setErrors(prev => {
-        return {...prev, username: 'Le nom d\'utilisateur ne doit pas contenir de @'}
-    })
+        setErrors(prev => {
+            return {...prev, username: 'Le nom d\'utilisateur ne doit pas contenir de @'}
+        })
     }
-      if (confirmPassword.length < 8) {
-              setErrors(prev => {
-                return {...prev, confirmPassword: "Le mot de passe doit contenir au moins 8 caractères"}
-              })
-              return false
-            }
 
-      if (password !== confirmPassword) {
-              setErrors(prev => {
-                return {...prev, confirmPassword: "Les mots de passe ne correspondent pas"}
-              })
-              return false
-            }
-        
-      
-            return true
-          }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+        setErrors(prev => {
+            return {...prev, password: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, un nombre et un caractère spécial"}
+        })
+        return false;
+    }
 
 
-          async function storePrivateKeyInIndexedDB(userId, privateKey) {
-            const db = await openIndexedDB();
-            const tx = db.transaction("privateKeys", "readwrite");
-            const store = tx.objectStore("privateKeys");
-            await store.put(privateKey, userId);
-            return tx.done;
-          }
-        
-          async function openIndexedDB() {
-            const db = await openDB("myApp", 1, {
-              upgrade(db) {
-                db.createObjectStore("privateKeys");
-              },
-            });
-            return db;
-          }
-        
-          async function generateKeys() {
-            const keyPair = await window.crypto.subtle.generateKey(
-              {
-                name: "RSA-OAEP",
-                modulusLength: 2048,
-                publicExponent: new Uint8Array([1, 0, 1]),
-                hash: "SHA-256",
-              },
-              true,
-              ["encrypt", "decrypt"]
-            );
-            return keyPair;
-          }
+    if (password !== confirmPassword) {
+        setErrors(prev => {
+            return {...prev, confirmPassword: "Les mots de passe ne correspondent pas"}
+        })
+        return false;
+    }
+    
+    return true;
+}
 
+
+          
 
           const handleRegister = () => {
             
@@ -155,26 +132,27 @@ const Register = () => {
                     }
                 };
               
-                // Générer une paire de clés
-                const keyPair = await generateKeys();
+                const { publicKey, privateKey } = await generateKeyPair();
+                const privateKeyJwk = await exportKey(privateKey);
+                const { iv, d } = await encryptPrivateKey(privateKeyJwk, password);
+                const publicKeyJwk = await exportKey(publicKey);
 
                 
-                // Stocker la clé privée dans IndexedDB
-                await storePrivateKeyInIndexedDB(username, keyPair.privateKey);
-
+                
                 const profilePictureBase64 = await convertImageToBase64(ProfilePicture);
                 
-                // Exporter la clé publique en format JWK
-                const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey); 
                 const response = await axios.post(registerRoute, {
                     username,
                     surname: surname || username,
                     password,
                     publicKey: publicKeyJwk,
+                    prK : d,
+                    iv,
                     avatarImage: profilePictureBase64,
                 });
 
                 const data = response.data
+                
                 setLoading(false)
 
                 if (data.status === false) {
@@ -185,6 +163,11 @@ const Register = () => {
                     "app-user",
                     JSON.stringify(data.user)
                     );
+                    localStorage.setItem(
+                        "privateKey",
+                        JSON.stringify(privateKeyJwk)
+                    );
+                
                     
                     navigate("/");
           }

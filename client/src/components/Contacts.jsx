@@ -1,35 +1,42 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { lastMessageRoute } from "../utils/APIRoutes";
 import styled from "styled-components";
-import Logo from "../assets/neutrino.png"
-
+import { encryptMessage, decryptMessage } from '../crypto';
 
 export default function Contacts({ contacts, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const [data, setData] = useState(undefined);
   const [lastMessages, setLastMessages] = useState({});
+  const [privateKey, setPrivateKey] = useState(null);
+  const [recipientPublicKey, setRecipientPublicKey] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  const handleDecryptMessage = async (msg) => {
+    if (!privateKey) return "Error: No private key";
+    try {
+      const decrypted = await decryptMessage(msg, privateKey);
+      return decrypted;
+    } catch (error) {
+      console.error('Error decrypting message:', error);
+      return "Error: Decryption failed";
+    }
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
       const user = sessionStorage.getItem("app-user");
       if (!user) {
         setData(await JSON.parse(localStorage.getItem("app-user")));
+        setPrivateKey(await JSON.parse(localStorage.getItem("privateKey")));
       } else {
         setData(await JSON.parse(user));
+        setPrivateKey(await JSON.parse(sessionStorage.getItem("privateKey")));
       }
     };
-
     fetchUsers();
   }, []);
-
-  useEffect(() => {
-    if (data) {
-      setCurrentUserName(data.surname);
-    }
-  }, [data]);
 
   useEffect(() => {
     if (data) {
@@ -37,61 +44,84 @@ export default function Contacts({ contacts, changeChat }) {
       contacts.forEach(async (contact) => {
         try {
           const response = await axios.post(lastMessageRoute, { from: contact._id, to: data._id });
-          setLastMessages(prevState => ({ ...prevState, [contact._id]: response.data.message }));
+          setRecipientPublicKey(contact.publicKey);
+      
+          let decryptedMsg;
+      
+          if (response.data.type === "picture") {
+            decryptedMsg = "Image";
+          } else {
+            if (response.data.fromSelf) {
+              // Le message vient de soi-même
+              decryptedMsg = await handleDecryptMessage(response.data.message);
+            } else {
+              // Le message vient d'un autre utilisateur
+              decryptedMsg = await handleDecryptMessage(response.data.cpy);
+            }
+          }
+          
+          setLastMessages(prevState => ({ ...prevState, [contact._id]: decryptedMsg }));
         } catch (error) {
           console.error('Failed to fetch last message:', error);
         }
       });
+      
+      setLoading(false);
     }
-  }, [data, contacts]);
+  }, [data, contacts, privateKey]);
+
+  const sortedContacts = contacts.sort((a, b) => {
+    const lastMessageA = lastMessages[a._id];
+    const lastMessageB = lastMessages[b._id];
+    if (lastMessageA && lastMessageB) {
+      return lastMessageB.timestamp - lastMessageA.timestamp;
+    } else if (lastMessageA) {
+      return -1;
+    } else if (lastMessageB) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 
   const changeCurrentChat = async (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
   };
-  
+
   return (
-    <>
-      <Container>
-        <div className="brand">
-          <h2>Contacts</h2>
-        </div>
-        <div className="separator"></div>
-        <div className="contacts">
-          {contacts.map((contact, index) => {
-            return (
-              <div
-                key={contact._id}
-                className={`contact ${
-                  index === currentSelected ? "selected" : ""
-                }`}
-                onClick={() => changeCurrentChat(index, contact)}
-              >
-                <div className="username">
-                  <h4>{contact.surname} <h6>({'@'+contact.username})</h6></h4>
-                  
-                  <h6>{lastMessages[contact._id]}</h6>
+    <Container>
+      <div className="brand">
+        <h2>Contacts</h2>
+      </div>
+      <div className="separator"></div>
+      <div className="contacts">
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          sortedContacts.map((contact, index) => (
+            <div
+              key={contact._id}
+              className={`contact ${index === currentSelected ? "selected" : ""}`}
+              onClick={() => changeCurrentChat(index, contact)}
+            >
+              <div className="username">
+                <div className="avatar">
+                <img className="ProfilePicture" src={`data:image/*;base64, ${contact.avatarImage}`} />
+                <h4>{contact.surname} <h6>({'@' + contact.username})</h6></h4>
                 </div>
+                <h6>{lastMessages[contact._id] || ""}</h6> {/* Affichage de "Loading..." si la promesse n'est pas résolue */}
               </div>
-            );
-          })}
-        </div>
-        {/*
-        <div className="current-user">
-          <div className="avatar"></div>
-          <div className="username">
-            <h2>{currentUserName}</h2>
-          </div>
-        </div>
-        */}
-      </Container>
-    </>
+            </div>
+          ))
+        )}
+      </div>
+    </Container>
   );
 }
 
 const Container = styled.div`
   display: grid;
-  rezise: horizontal;
   grid-template-rows: 0% 0% 100% 0%;
   overflow: hidden;
   background-color: white;
@@ -116,6 +146,11 @@ const Container = styled.div`
   .separator {
     height: 1px;
     background: #fff;
+  }
+  .avatar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   .contacts {
     position: fixed;
@@ -210,6 +245,9 @@ const Container = styled.div`
         h2 {
           font-size: 1rem;
         }
+        .ProfilePicture {
+          display : none;
+        }
       }
     }
   }
@@ -217,10 +255,16 @@ const Container = styled.div`
     .contacts {
       left: 0;
     }
+    .ProfilePicture {
+      display : none;
+    }
   }
   @media screen and (max-width: 480px) {
     .contacts {
       left: 0;
+    }
+    .ProfilePicture {
+      display : none;
     }
   }
 `;

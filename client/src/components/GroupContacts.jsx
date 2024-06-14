@@ -186,7 +186,7 @@ background-color: white;
   .choose-members {
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 60%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-wrap: wrap;
@@ -209,6 +209,10 @@ background-color: white;
     font-size: 1.5rem;
     cursor: pointer;
 
+  }
+  .checkbox-wrapper-13 {
+    display: flex;
+    gap: 0.5rem;
   }
   
   // Submit button

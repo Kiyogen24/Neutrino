@@ -13,7 +13,9 @@ module.exports.getMessages = async (req, res, next) => {
     const projectedMessages = messages.map((msg) => {
       return {
         fromSelf: msg.sender.toString() === from,
+        //message: {iv: msg.iv,ciphertext:msg.ciphertext},
         message: msg.message.text,
+        cpy: msg.cpy.text,
         sentAt: msg.createdAt,
         type: msg.type,
       };
@@ -41,12 +43,14 @@ module.exports.getLastMessage = async (req, res, next) => {
     let messageType = message.type;
     if (messageType === 'picture') {
       messageType = 'Image';
-      message.message.text = 'Image';
+      message.message = 'Image';
     }
 
     const projectedMessage = {
       fromSelf: message.sender.toString() === from,
-      message: messageType,
+      //message: {iv: message.iv, ciphertext:message.ciphertext},
+      message: message.message.text,
+      cpy: message.cpy.text,
       sentAt: message.createdAt,
       type: message.type,
     };
@@ -59,10 +63,12 @@ module.exports.getLastMessage = async (req, res, next) => {
 
 module.exports.addMessage = async (req, res, next) => {
   try {
-    const { from, to, message, type } = req.body;
-    
+    const { from, to, message, cpy, type } = req.body;
     const data = await Messages.create({
-      message: { text: message },
+      //iv: message.iv,
+      //ciphertext: message.ciphertext,
+      message: {text: message},
+      cpy: {text : cpy},
       users: [from, to],
       sender: from,
       type: type,

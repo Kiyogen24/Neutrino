@@ -24,9 +24,18 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   publicKey: {
-    type: mongoose.Schema.Types.Mixed,
+    type: String,
     required: true,
-  }
+  },
+  prK: {
+    type: String,
+    required: true,
+  },
+  iv: {
+    type: String,
+    required: true,
+  },
+  
 },
   {
     timestamps: true,

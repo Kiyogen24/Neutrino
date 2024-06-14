@@ -26,7 +26,7 @@ export default function GroupChatContainer({ currentGroup, socket }) {
     
       color = "#";
       for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 15)];
+        color += letters[Math.floor(Math.random() * 12)];
       }
 
       
@@ -63,7 +63,19 @@ export default function GroupChatContainer({ currentGroup, socket }) {
   };
 
   // Create a map to store the name-color pairs
-  const nameColorMap = {};
+  let nameColorMap = {};
+
+  // Load the nameColorMap from local storage if it exists
+  const storedNameColorMap = localStorage.getItem("nameColorMap");
+  if (storedNameColorMap) {
+    nameColorMap = JSON.parse(storedNameColorMap);
+  }
+
+  useEffect(() => {
+    // Save the nameColorMap to local storage
+    localStorage.setItem("nameColorMap", JSON.stringify(nameColorMap));
+  }, [nameColorMap]);
+
 
   useEffect(() => {
     currentGroupRef.current = currentGroup;
@@ -113,7 +125,7 @@ export default function GroupChatContainer({ currentGroup, socket }) {
   }, [groupMembers]);
 
 
-  const handleSendMsg = async (msg) => {
+  const handleSendMsg = async (msg, type) => {
     if (!user) {
       setData(await JSON.parse(localStorage.getItem("app-user")));
     } else {
@@ -127,6 +139,7 @@ export default function GroupChatContainer({ currentGroup, socket }) {
         to: currentGroup._id,
         members: groupMembers,
         msg,
+        type: type,
       }, data);
 
       setIsTyping(false);
@@ -135,10 +148,11 @@ export default function GroupChatContainer({ currentGroup, socket }) {
         groupId: currentGroup._id,
         senderId: data._id,
         message: msg,
+        type: type,
       });
 
       const msgs = [...messages];
-      msgs.push({ fromSelf: true, fromUser: [data._id, data.surname], message: msg, sentAt: timestamp });
+      msgs.push({ fromSelf: true, fromUser: [data._id, data.surname], message: msg, type: type, sentAt: timestamp });
       setMessages(msgs);
     }
   };
@@ -160,7 +174,7 @@ export default function GroupChatContainer({ currentGroup, socket }) {
       socket.current.on("msg-grp-recieve", (data) => {
         let timestamp = new Date().getTime();
         if (currentGroupRef.current && data.to === currentGroupRef.current._id) {
-          setArrivalMessage({ fromSelf: false, fromUser:  [data.fromUser[0], data.fromUser[1]], message: data.msg, sentAt: timestamp });
+          setArrivalMessage({ fromSelf: false, fromUser:  [data.fromUser[0], data.fromUser[1]], message: data.msg, type: data.type, sentAt: timestamp });
         }
       });
     }
@@ -207,7 +221,7 @@ export default function GroupChatContainer({ currentGroup, socket }) {
           }
           return (
             <div ref={index === messages.length - 1 ? scrollRef : null} key={uuidv4()}>
-              <div className={`message ${message.fromSelf ? "sended" : "recieved"}`}>
+              <div className={`message ${message.fromSelf ? "sended" : "recieved"}`} style={{ flexDirection: "row" }}>
                 {!message.fromSelf && (
                   <div className="avatars" style={{ backgroundColor: nameColorMap[message.fromUser[1]] }}>
                     {avatarImages[message.fromUser[0]] ? (
@@ -217,6 +231,14 @@ export default function GroupChatContainer({ currentGroup, socket }) {
                     )}
                   </div>
                 )}
+                  {message.type === "picture" ? (
+                    <>
+                    
+                    <img className="photoEnvoyee" style={{borderRadius: "1rem", maxHeight: "auto", maxWidth: "40%"}} src={`data:image/*;base64, ${message.message}`} alt="picture" />
+                    
+                    </>
+                  ) : ( 
+                    <>
                 <div className="content">
                   {!message.fromSelf && (
                     <div className="surname">
@@ -226,6 +248,7 @@ export default function GroupChatContainer({ currentGroup, socket }) {
                   <p className="text">{message.message}</p>
                   <p className="date">{formatTime(message.sentAt)}</p>
                 </div>
+                  </>)}
               </div>
             </div>
           );

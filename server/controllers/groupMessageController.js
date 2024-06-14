@@ -3,11 +3,12 @@ const User = require("../models/userModel");
 
 module.exports.sendMessageToGroup = async (req, res, next) => {
   try {
-    const { groupId, senderId, message } = req.body;
+    const { groupId, senderId, message, type } = req.body;
     const data = await GroupMessage.create({
       groupId: groupId,
       senderId: senderId,
       message: { text: message },
+      type: type,
     });
 
     if (data) return res.json({ msg: "Message added successfully." });
@@ -32,6 +33,7 @@ module.exports.getGroupMessages = async (req, res, next) => {
         fromSelf: msg.senderId.toString() === userId,
         fromUser: user ? [user._id,user.surname] : '', // Add the username to the response
         message: msg.message.text,
+        type: msg.type,
         sentAt: msg.createdAt,
       };
     }));

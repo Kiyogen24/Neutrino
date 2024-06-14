@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "homepage": "http://neutrino-chat.com/",
+  "homepage": ".",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -9,8 +9,11 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.7",
+    "bcryptjs-react": "^2.4.6",
     "browser-image-compression": "^2.0.2",
     "convert-base64-to-image": "^0.0.16",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "emoji-picker-react": "^4.8.0",
     "gsap": "^3.12.5",
